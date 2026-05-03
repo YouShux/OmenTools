@@ -11,6 +11,7 @@ using OmenTools.OmenService.Abstractions;
 
 namespace OmenTools.OmenService;
 
+// TODO: 把全部的 SeString 改为 ReadOnlySeSrting
 public class NotifyHelper : OmenServiceBase<NotifyHelper>
 {
     public string? NotificationMinimizedText { get; set; }
