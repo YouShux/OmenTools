@@ -97,14 +97,14 @@ public class FontManager : OmenServiceBase<FontManager>
     public IFontHandle UIFont80  => GetUIFont(0.8f);
     public IFontHandle UIFont60  => GetUIFont(0.6f);
 
-    public float GlobalFontScale => Config.FontSize / 12f * ImGuiHelpers.GlobalScaleSafe;
+    public float GlobalFontScale => Config.FontSize / 12f * ImGuiHelpers.GlobalScale;
     public bool  IsFontBuilding  => activeFontBuilds > 0;
 
     public IFontHandle GetUIFont(float scale) =>
         GetFont(GetActualFontSize(scale));
 
     public float GetActualFontSize(float scale) =>
-        MathF.Round(Config.FontSize * scale * ImGuiHelpers.GlobalScaleSafe, 1);
+        MathF.Round(Config.FontSize * scale * ImGuiHelpers.GlobalScale, 1);
 
     public IFontHandle GetFont(float size)
     {
