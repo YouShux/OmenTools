@@ -4,7 +4,7 @@ using OmenTools.OmenService;
 
 namespace OmenTools.Interop.Game.ExecuteCommand.Implementations;
 
-public sealed class FishCommand : ExecuteCommandBase
+public sealed class FishingCommand : ExecuteCommandBase
 {
     /// <summary>
     ///     抛竿

@@ -537,7 +537,7 @@ public enum ExecuteCommandFlag
     ///     </para>
     ///     <para><c>param2</c>: 额外参数 (若为换饵, 则为物品 ID; 若为游动饵, 则为饵索引)</para>
     /// </remarks>
-    /// <seealso cref="FishCommand" />
+    /// <seealso cref="FishingCommand" />
     Fish = 701,
 
     /// <summary>
@@ -1224,6 +1224,10 @@ public enum ExecuteCommandFlag
     ///     <para><c>param3</c>：Inventory Slot</para>
     ///     <para><c>param4</c>：物品ID, HQ时增加 100_0000</para>
     ///     <br />
+    ///     <para>分解（3735552)</para>
+    ///     <para><c>param2</c>：Inventory Type</para>
+    ///     <para><c>param3</c>：Inventory Slot</para>
+    ///     <para><c>param4</c>：物品ID, HQ时增加 100_0000</para>
     /// </remarks>
     /// <seealso cref="EventFrameworkActionCommand" />
     EventFrameworkAction = 2800,
