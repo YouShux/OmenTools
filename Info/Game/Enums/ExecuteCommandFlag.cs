@@ -10,7 +10,7 @@ public enum ExecuteCommandFlag
     /// </summary>
     /// <remarks>
     ///     <para><c>param1</c>: 1 - 拔出, 0 - 收回</para>
-    ///     <para><c>param2</c>: 未知, 固定为 1</para>
+    ///     <para><c>param2</c>: 是否立即操作 (1 - 是, 0 - 否)</para>
     /// </remarks>
     /// <seealso cref="WeaponCommand" />
     Weapon = 1,
@@ -45,6 +45,11 @@ public enum ExecuteCommandFlag
     /// </remarks>
     /// <seealso cref="PVPCommand" />
     PVPQuickChat = 5,
+
+    /// <summary>
+    ///     游戏管理员指令
+    /// </summary>
+    GMCommand11 = 11,
 
     /// <summary>
     ///     下坐骑
@@ -85,24 +90,49 @@ public enum ExecuteCommandFlag
     CancelCast = 105,
 
     /// <summary>
-    ///     共同骑乘
+    ///     共同骑乘 (指定座位)
     /// </summary>
     /// <remarks>
-    ///     <para><c>param1</c>: 目标 ID</para>
-    ///     <para><c>param2</c>: 位置索引</para>
+    ///     <para><c>param1</c>: 骑乘者的 EntityID</para>
+    ///     <para><c>param2</c>: 座位索引</para>
     /// </remarks>
     /// <seealso cref="MountCommand" />
     RidePillion = 106,
 
     /// <summary>
-    ///     收起时尚配饰
+    ///     共同骑乘 (自动分配座位)
     /// </summary>
-    WithdrawParasol109 = 109,
+    /// <remarks>
+    ///     <para><c>param1</c>: 骑乘者的 EntityID</para>
+    /// </remarks>
+    /// <seealso cref="MountCommand" />
+    RidePillionAuto = 107,
 
     /// <summary>
-    ///     收起时尚配饰
+    ///     因执行其他动作或不满足条件, 而被强行收起时尚配饰
     /// </summary>
-    WithdrawParasol110 = 110,
+    WithdrawParasolForced = 109,
+
+    /// <summary>
+    ///     主动收起时尚配饰
+    /// </summary>
+    WithdrawParasol = 110,
+
+    /// <summary>
+    ///     若已设置时尚配饰, 则根据当前情况使用/收回时尚配饰
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 时尚配饰 ID (0 表示收回当前配饰)</para>
+    /// </remarks>
+    UpdateParasol = 111,
+
+    /// <summary>
+    ///     设置时尚配饰
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 时尚配饰 ID (0 表示取消选择)</para>
+    /// </remarks>
+    SetParasol = 112,
 
     /// <summary>
     ///     复活
