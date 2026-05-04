@@ -538,7 +538,7 @@ public enum ExecuteCommandFlag
     ///     <para><c>param2</c>: 额外参数 (若为换饵, 则为物品 ID; 若为游动饵, 则为饵索引)</para>
     /// </remarks>
     /// <seealso cref="FishingCommand" />
-    Fish = 701,
+    Fishing = 701,
 
     /// <summary>
     ///     固定路径跳跃开始 (看起来似乎并不是必须发这个, 但是结束 <see cref="GimmickJumpEnd" /> 是会有的)
