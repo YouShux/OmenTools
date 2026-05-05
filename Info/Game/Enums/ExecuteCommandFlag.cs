@@ -872,16 +872,135 @@ public enum ExecuteCommandFlag
     /// <seealso cref="CraftCommand" />
     Craft = 700,
 
-    // TODO: 需要完整检查
     /// <summary>
     ///     钓鱼
     /// </summary>
     /// <remarks>
-    ///     <para>
-    ///         <c>param1</c>: 动作 (0 - 抛竿, 1 - 收杆, 2 - 提钩, 4 - 换饵, 5 - 坐下, 10 - 强力提杆, 11 - 精准提钩, 13 - 耐心, 14 - 耐心2, 24 - 熟练妙招,
-    ///         25 - 游动饵)
-    ///     </para>
-    ///     <para><c>param2</c>: 额外参数 (若为换饵, 则为物品 ID; 若为游动饵, 则为饵索引)</para>
+    ///     <para><c>param1</c>: 动作</para>
+    ///     <list type="table">
+    ///         <item>
+    ///             <term>0</term>
+    ///             <description>抛竿</description>
+    ///         </item>
+    ///         <item>
+    ///             <term>1</term>
+    ///             <description>收杆</description>
+    ///         </item>
+    ///         <item>
+    ///             <term>2</term>
+    ///             <description>提钩</description>
+    ///         </item>
+    ///         <item>
+    ///             <term>3</term>
+    ///             <description>以小钓大</description>
+    ///         </item>
+    ///         <item>
+    ///             <term>4</term>
+    ///             <description>换饵 — <c>param2</c> Item ID</description>
+    ///         </item>
+    ///         <item>
+    ///             <term>5</term>
+    ///             <description>坐下</description>
+    ///         </item>
+    ///         <item>
+    ///             <term>6</term>
+    ///             <description>垂钓之光</description>
+    ///         </item>
+    ///         <item>
+    ///             <term>7</term>
+    ///             <description>放生</description>
+    ///         </item>
+    ///         <item>
+    ///             <term>9</term>
+    ///             <description>撒饵</description>
+    ///         </item>
+    ///         <item>
+    ///             <term>10</term>
+    ///             <description>强力提钩</description>
+    ///         </item>
+    ///         <item>
+    ///             <term>11</term>
+    ///             <description>精准提钩</description>
+    ///         </item>
+    ///         <item>
+    ///             <term>12</term>
+    ///             <description>鱼眼</description>
+    ///         </item>
+    ///         <item>
+    ///             <term>13</term>
+    ///             <description>耐心</description>
+    ///         </item>
+    ///         <item>
+    ///             <term>14</term>
+    ///             <description>耐心II</description>
+    ///         </item>
+    ///         <item>
+    ///             <term>15</term>
+    ///             <description>以小钓大II</description>
+    ///         </item>
+    ///         <item>
+    ///             <term>16</term>
+    ///             <description>双重提钩</description>
+    ///         </item>
+    ///         <item>
+    ///             <term>17</term>
+    ///             <description>放生列表</description>
+    ///         </item>
+    ///         <item>
+    ///             <term>19</term>
+    ///             <description>熟练渔技</description>
+    ///         </item>
+    ///         <item>
+    ///             <term>20</term>
+    ///             <description>大鱼猎手</description>
+    ///         </item>
+    ///         <item>
+    ///             <term>21</term>
+    ///             <description>三重提钩</description>
+    ///         </item>
+    ///         <item>
+    ///             <term>22</term>
+    ///             <description>雄心之饵</description>
+    ///         </item>
+    ///         <item>
+    ///             <term>23</term>
+    ///             <description>谦逊之饵</description>
+    ///         </item>
+    ///         <item>
+    ///             <term>24</term>
+    ///             <description>熟练妙招</description>
+    ///         </item>
+    ///         <item>
+    ///             <term>25</term>
+    ///             <description>游动饵 — <c>param2</c> 饵索引</description>
+    ///         </item>
+    ///         <item>
+    ///             <term>26</term>
+    ///             <description>大鱼的知识</description>
+    ///         </item>
+    ///         <item>
+    ///             <term>27</term>
+    ///             <description>歇竿</description>
+    ///         </item>
+    ///         <item>
+    ///             <term>28</term>
+    ///             <description>未知</description>
+    ///         </item>
+    ///         <item>
+    ///             <term>29</term>
+    ///             <description>未知</description>
+    ///         </item>
+    ///         <item>
+    ///             <term>30</term>
+    ///             <description>内部通知</description>
+    ///         </item>
+    ///         <item>
+    ///             <term>31</term>
+    ///             <description>加钩</description>
+    ///         </item>
+    ///     </list>
+    ///     <para><c>param3</c>: 始终为 0</para>
+    ///     <para><c>param4</c>: 始终为 0</para>
     /// </remarks>
     /// <seealso cref="FishingCommand" />
     Fishing = 701,
