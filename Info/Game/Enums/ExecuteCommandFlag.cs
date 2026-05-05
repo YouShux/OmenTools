@@ -109,6 +109,15 @@ public enum ExecuteCommandFlag
     RidePillionAuto = 107,
 
     /// <summary>
+    ///     请求加载小队成员角色数据
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 索引 (0 至 6)</para>
+    ///     <para><c>param2</c>: 成员的 EntityID</para>
+    /// </remarks>
+    LoadPartyMember = 108,
+
+    /// <summary>
     ///     因执行其他动作或不满足条件, 而被强行收起时尚配饰
     /// </summary>
     WithdrawParasolForced = 109,
@@ -219,6 +228,30 @@ public enum ExecuteCommandFlag
     CancelTeleport = 204,
 
     /// <summary>
+    ///     拒绝复活请求
+    /// </summary>
+    RejectRevive = 205,
+
+    /// <summary>
+    ///     未知大型副本事件命令
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: Event Kind</para>
+    ///     <para><c>param2</c>: 未知</para>
+    /// </remarks>
+    PublicContentCommand206 = 206,
+
+    /// <summary>
+    ///     未知传送命令
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知参数的高 32 位</para>
+    ///     <para><c>param2</c>: 未知参数</para>
+    ///     <para><c>param3</c>: 未知参数</para>
+    /// </remarks>
+    TelepoCommand207 = 207,
+
+    /// <summary>
     ///     请求好友房屋传送信息
     /// </summary>
     /// <remarks>
@@ -272,10 +305,18 @@ public enum ExecuteCommandFlag
     RequestTitle = 303,
 
     /// <summary>
+    ///     向服务器标记已展示过某一新手指南
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: HowTo ID</para>
+    /// </remarks>
+    MarkHowToFinished = 306,
+
+    /// <summary>
     ///     请求过场剧情数据
     /// </summary>
     /// <remarks>
-    ///     <para><c>param1</c>: 过场剧情在 Cutscene.csv 中的对应索引</para>
+    ///     <para><c>param1</c>: Cutscene ID</para>
     /// </remarks>
     RequestCutscene307 = 307,
 
@@ -289,20 +330,34 @@ public enum ExecuteCommandFlag
     RequestContentsNoteCategory = 310,
 
     /// <summary>
+    ///     未知命令 (似乎与萌宠之王有一些联系)
+    /// </summary>
+    UnknownCommand312 = 312,
+
+    /// <summary>
     ///     清除场地标点
     /// </summary>
     ClearFieldMarkers = 313,
 
     /// <summary>
+    ///     配置项 AutoChangeCameraMode 相关上报
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知, 可能为 1 或 0, 可能为状态值</para>
+    ///     <para><c>param2</c>: 未知</para>
+    /// </remarks>
+    AutoChangeCameraMode = 314,
+
+    /// <summary>
     ///     将青魔法师技能交换或应用于有效技能
     /// </summary>
     /// <remarks>
-    ///     <para><c>param1</c>: 类型 (0 为应用有效技能, 1 为交换有效技能)</para>
+    ///     <para><c>param1</c>: 类型 (0 - 应用有效技能, 1 - 交换有效技能)</para>
     ///     <para><c>param2</c>: 格子序号 (从 0 开始, 小于 24)</para>
     ///     <para><c>param3</c>: 技能 ID / 格子序号 (从 0 开始, 小于 24)</para>
     /// </remarks>
     /// <seealso cref="BlueMagicCommand" />
-    AssignBLUActionToSlot = 315,
+    SetBlueAction = 315,
 
     /// <summary>
     ///     请求跨界传送数据
@@ -350,14 +405,33 @@ public enum ExecuteCommandFlag
     SetRetainerMarketPrice = 400,
 
     /// <summary>
+    ///     请求讨伐笔记数据
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 讨伐笔记类别索引 (Agent 里的 byte MonsterNote)</para>
+    ///     <para><c>param2</c>: 等级</para>
+    ///     <para><c>param3</c>: 未知, Agent 调用似乎始终为 0, 但是也观察到其他不为 0 的情况</para>
+    /// </remarks>
+    RequestMonsterNote = 401,
+
+    /// <summary>
+    ///     清空回收仓库通知
+    /// </summary>
+    ReclaimClear = 402,
+
+    /// <summary>
+    ///     取回全部 1.0 遗产物品或者房屋被拆除时的临时保管在 NPC 处的家具
+    /// </summary>
+    ReclaimItems = 403,
+
+    /// <summary>
     ///     请求指定物品栏数据
     /// </summary>
     /// <remarks>
-    ///     <para><c>param1</c>: (int)InventoryType</para>
+    ///     <para><c>param1</c>: InventoryType</para>
     /// </remarks>
     /// <seealso cref="InventoryCommand" />
     RequestInventory = 404,
-
 
     /// <summary>
     ///     在不同的物品栏间移动物品
@@ -367,6 +441,15 @@ public enum ExecuteCommandFlag
     ///     <para><c>param2</c>: 目标 InventoryType</para>
     /// </remarks>
     MoveItemInventory = 405,
+
+    /// <summary>
+    ///     通知物品移动操作受阻 (主要是部队储物柜在使用, 比如储物柜加载未完成、其他玩家正在使用储物柜)
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 来源 InventoryType</para>
+    ///     <para><c>param2</c>: 目标 InventoryType</para>
+    /// </remarks>
+    InventoryOperationBlocked = 406,
 
     /// <summary>
     ///     进入镶嵌魔晶石状态
@@ -388,9 +471,93 @@ public enum ExecuteCommandFlag
     LeaveMateriaAttachState = 409,
 
     /// <summary>
-    ///     取消魔晶石镶嵌委托
+    ///     进入魔晶石镶嵌请求状态
     /// </summary>
-    CancelMateriaMeldRequest = 418,
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知, MateriaRequestManager 里的一个字段</para>
+    /// </remarks>
+    EnterMateriaAttachRequestState = 410,
+
+    /// <summary>
+    ///     离开魔晶石镶嵌请求状态
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知, 0 或 1</para>
+    ///     <para><c>param2</c>: 未知, 0 或 1</para>
+    /// </remarks>
+    LeaveMateriaAttachRequestState = 411,
+
+    /// <summary>
+    ///     请求帮助镶嵌魔晶石
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 目标 EntityID</para>
+    /// </remarks>
+    SendMateriaAttachRequest = 412,
+
+    /// <summary>
+    ///     为装备贴上/取下部队队徽
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: InventoryType</para>
+    ///     <para><c>param2</c>: InventorySlot</para>
+    ///     <para><c>param3</c>: 0 - 取下, 1 - 贴上</para>
+    /// </remarks>
+    FreeCompanyCrestDecal = 414,
+
+    /// <summary>
+    ///     批量为装备中装备贴上/取下部队队徽
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 0 - 取下, 1 - 贴上</para>
+    /// </remarks>
+    FreeCompanyCrestDecalBatchEquipped = 415,
+
+    /// <summary>
+    ///     批量为装备贴上/取下部队队徽
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 目标范围 (5 - 兵装库; 6 - 物品)</para>
+    ///     <para><c>param2</c>: 0 - 取下, 1 - 贴上</para>
+    /// </remarks>
+    FreeCompanyCrestDecalBatch = 416,
+
+    /// <summary>
+    ///     因职业变更, 新职业不满足需求, 而自动取消魔晶石镶嵌委托
+    /// </summary>
+    CancelMateriaAttachRequest = 418,
+
+    /// <summary>
+    ///     完成了特定的物品栏操作 (雇员比较多)
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: Inventory Type</para>
+    ///     <para><c>param2</c>: Inventory Slot</para>
+    /// </remarks>
+    FinishInventoryOperation = 419,
+
+    /// <summary>
+    ///     向部队储物柜存入金币
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 金额</para>
+    ///     <para>需要先调用 <see cref="MoveItemInventory" /></para>
+    /// </remarks>
+    DepositFreeCompanyGil = 420,
+
+    /// <summary>
+    ///     从部队储物柜取出金币
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 金额</para>
+    ///     <para>需要先调用 <see cref="MoveItemInventory" /></para>
+    /// </remarks>
+    WithdrawFreeCompanyGil = 421,
+
+    /// <summary>
+    ///     请求部队储物柜操作历史记录
+    /// </summary>
+    RequestFreeCompanyChestLog = 422,
 
     /// <summary>
     ///     请求收藏柜数据
@@ -416,24 +583,90 @@ public enum ExecuteCommandFlag
     RestoreFromCabinet = 425,
 
     /// <summary>
+    ///     未知收藏柜命令 (尝试执行会报 <c>剧情被中断</c>)
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: Cabinet ID</para>
+    ///     <para><c>param2</c>: Inventory Type</para>
+    ///     <para><c>param3</c>: Inventory Slot</para>
+    /// </remarks>
+    CabinetCommand426 = 426,
+
+    /// <summary>
     ///     请求收藏柜数据完成 (会把标志位设为 1)
     /// </summary>
     FinishRequestCabinet = 427,
+
+    /// <summary>
+    ///     接受怪物狩猎通缉令
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 在 UI.MobHunt.AvailableMarkId 中的索引</para>
+    ///     <para><c>param2</c>: Mark ID</para>
+    /// </remarks>
+    AcceptMobHuntBill = 428,
+
+    /// <summary>
+    ///     放弃怪物狩猎通缉令
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 在 UI.MobHunt.AvailableMarkId 中的索引</para>
+    ///     <para><c>param2</c>: Mark ID</para>
+    /// </remarks>
+    AbandonMobHuntBill = 429,
 
     /// <summary>
     ///     精制魔晶石
     /// </summary>
     /// <remarks>
     ///     <para><c>param1</c>: Inventory Type</para>
-    ///     <para><c>param1</c>: Inventory Slot</para>
+    ///     <para><c>param2</c>: Inventory Slot</para>
     /// </remarks>
     /// <seealso cref="MateriaCommand" />
     ExtractMateria = 437,
 
     /// <summary>
+    ///     为雇员武具投影
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 目标 Inventory Type</para>
+    ///     <para><c>param2</c>: 目标 Inventory Slot</para>
+    ///     <para><c>param3</c>: 来源 Inventory Type</para>
+    ///     <para><c>param4</c>: 来源 Inventory Slot</para>
+    /// </remarks>
+    CastGlamourToRetainer = 438,
+
+    /// <summary>
+    ///     未知投影台指令
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: Inventory Type</para>
+    ///     <para><c>param2</c>: Inventory Slot</para>
+    /// </remarks>
+    MiragePrismCommand439 = 439,
+
+    /// <summary>
+    ///     未知古武天球书卷指令
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: Inventory Type</para>
+    ///     <para><c>param2</c>: Inventory Slot</para>
+    /// </remarks>
+    RelicSphereCommand440 = 440,
+
+    /// <summary>
     ///     更换套装
     /// </summary>
-    GearsetChange = 441,
+    ChangeGearset = 441,
+
+    /// <summary>
+    ///     恢复被锁定/拦截的物品
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: InventoryType</para>
+    ///     <para><c>param2</c>: InventorySlot</para>
+    /// </remarks>
+    RecoverBlockedItem = 442,
 
     /// <summary>
     ///     请求陆行鸟鞍囊的数据
@@ -451,6 +684,15 @@ public enum ExecuteCommandFlag
     FinishRequestReconstrcutionBuyBack = 446,
 
     /// <summary>
+    ///     未知物品操作命令
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: Context ID (也可以为 0)</para>
+    ///     <para><c>param2</c>: 操作类型 (也可以为 725)</para>
+    /// </remarks>
+    InventoryOperationCommand449 = 449,
+
+    /// <summary>
     ///     发送修理委托
     /// </summary>
     /// <remarks>
@@ -459,26 +701,41 @@ public enum ExecuteCommandFlag
     /// <seealso cref="RepairCommand" />
     SendRepairRequest = 450,
 
-
     /// <summary>
     ///     完成修理委托
     /// </summary>
     /// <remarks>
     ///     <para><c>param1</c>: 未知, AgentRepairRequest.Instance() 中一个字段</para>
     ///     <para><c>param2</c>: 未知, AgentRepairRequest.Instance() 中一个字段</para>
-    ///     <para><c>param1</c>: 未知, AtkValue 传入的一个字段</para>
+    ///     <para><c>param3</c>: 未知, AtkValue 传入的一个字段</para>
     /// </remarks>
     /// <seealso cref="RepairCommand" />
     FinishRepairRequest = 451,
 
     /// <summary>
+    ///     开始修理委托
+    /// </summary>
+    StartRepairRequest = 452,
+
+    /// <summary>
     ///     取消修理委托
     /// </summary>
-    /// <remarks>
-    ///     <para><c>param1</c>: 目标 Entity ID</para>
-    /// </remarks>
     /// <seealso cref="RepairCommand" />
     CancelRepairRequest = 453,
+
+    /// <summary>
+    ///     确认本地已进行修理委托动作
+    /// </summary>
+    ConfirmRepairRequest = 454,
+
+    /// <summary>
+    ///     装备面部配饰
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: Glasses Slot</para>
+    ///     <para><c>param2</c>: Glasses ID</para>
+    /// </remarks>
+    EquipGlasses = 455,
 
     /// <summary>
     ///     打断当前正在进行的情感动作
@@ -514,12 +771,36 @@ public enum ExecuteCommandFlag
     IdlePostureExit = 507,
 
     /// <summary>
-    ///     固定路径跳跃结束
+    ///     清理固定路径跳跃状态
     /// </summary>
     /// <remarks>
-    ///     <para><c>param1</c>: 未知 (看起来像内部计数器)</para>
+    ///     <para><c>param1</c>: 未知 (看起来似乎是内部计数器)</para>
     /// </remarks>
-    GimmickJumpEnd = 602,
+    CleanupGimmickJumpState602 = 602,
+
+    /// <summary>
+    ///     未知玩家控制命令
+    /// </summary>
+    ControlCommand604 = 604,
+
+    /// <summary>
+    ///     未知玩家控制指令
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: X 坐标</para>
+    ///     <para><c>param2</c>: Y 坐标</para>
+    ///     <para><c>param3</c>: Z 坐标</para>
+    ///     <para><c>param4</c>: Character Rotation</para>
+    /// </remarks>
+    ControlCommand605 = 605,
+
+    /// <summary>
+    ///     未知玩家控制指令
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知 (甚至找不到赋值的地方在哪)</para>
+    /// </remarks>
+    ControlCommand606 = 606,
 
     /// <summary>
     ///     进入游泳状态 (也会强制下坐骑)
@@ -532,6 +813,22 @@ public enum ExecuteCommandFlag
     LeaveSwim = 609,
 
     /// <summary>
+    ///     清理固定路径跳跃状态
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知 (看起来似乎是内部计数器)</para>
+    /// </remarks>
+    CleanupGimmickJumpState611 = 611,
+
+    /// <summary>
+    ///     清理固定路径跳跃状态
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知 (看起来似乎是内部计数器)</para>
+    /// </remarks>
+    CleanupGimmickJumpState613 = 613,
+
+    /// <summary>
     ///     赋予/取消禁止骑乘坐骑状态
     /// </summary>
     /// <remarks>
@@ -539,6 +836,24 @@ public enum ExecuteCommandFlag
     /// </remarks>
     /// <seealso cref="MountCommand" />
     DisableMounting = 612,
+
+    /// <summary>
+    ///     未知控制命令
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知, 0 或 1</para>
+    /// </remarks>
+    ControlCommand614 = 614,
+
+    /// <summary>
+    ///     未知控制命令
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: X 坐标</para>
+    ///     <para><c>param2</c>: Y 坐标</para>
+    ///     <para><c>param3</c>: Z 坐标</para>
+    /// </remarks>
+    ControlCommand615 = 615,
 
     /// <summary>
     ///     进入飞行状态
@@ -557,6 +872,7 @@ public enum ExecuteCommandFlag
     /// <seealso cref="CraftCommand" />
     Craft = 700,
 
+    // TODO: 需要完整检查
     /// <summary>
     ///     钓鱼
     /// </summary>
@@ -571,22 +887,126 @@ public enum ExecuteCommandFlag
     Fishing = 701,
 
     /// <summary>
-    ///     固定路径跳跃开始 (看起来似乎并不是必须发这个, 但是结束 <see cref="GimmickJumpEnd" /> 是会有的)
+    ///     请求鱼类图鉴数据 (钓鱼)
     /// </summary>
     /// <remarks>
-    ///     <para><c>param1</c>: 未知</para>
+    ///     <para><c>param1</c>: FishingNoteInfo ID</para>
     /// </remarks>
-    GimmickJumpStart = 706,
+    RequestFishingNoteInfo = 702,
 
     /// <summary>
-    ///     结束制作
+    ///     请求鱼类图鉴数据 (刺鱼)
     /// </summary>
-    ExitCraft = 711,
+    /// <remarks>
+    ///     <para><c>param1</c>: FishingNoteInfo ID</para>
+    /// </remarks>
+    RequestSpearfishNoteInfo = 703,
+
+    /// <summary>
+    ///     未知任务命令
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知, 1 或 2</para>
+    ///     <para><c>param2</c>: 未知</para>
+    ///     <para><c>param3</c>: 未知</para>
+    /// </remarks>
+    QuestCommand704 = 704,
+
+    /// <summary>
+    ///     标记上次阅读到的任务
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知, 恒为 1</para>
+    ///     <para><c>param2</c>: Quest ID (ushort)</para>
+    /// </remarks>
+    MarkLastReadQuest = 705,
+
+    /// <summary>
+    ///     请求采集点数据
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: GatheringPoint ID</para>
+    /// </remarks>
+    RequestGatheringPoint = 706,
+
+    /// <summary>
+    ///     将采集笔记指定分区指定等级区间标记为已发现过
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: Division Index</para>
+    ///     <para><c>param2</c>: LevelRange Index</para>
+    /// </remarks>
+    MarkSeenGatherDivisionLevelRange = 708,
+
+    /// <summary>
+    ///     将制作笔记指定分区指定等级区间标记为已发现过
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: Division Index</para>
+    ///     <para><c>param2</c>: LevelRange Index</para>
+    /// </remarks>
+    MarkSeenCraftDivisionLevelRange = 711,
 
     /// <summary>
     ///     中止/完成简易制作
     /// </summary>
-    QuickSynthesis = 712,
+    LeaveQuickSynthesis = 712,
+
+    /// <summary>
+    ///     未知刺鱼命令
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知</para>
+    ///     <para><c>param2</c>: Action ID</para>
+    ///     <para><c>param3</c>: 未知</para>
+    /// </remarks>
+    SpearFishingCommand713 = 713,
+
+    /// <summary>
+    ///     未知刺鱼命令 (似乎和刺鱼完成有一定关系)
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知</para>
+    ///     <para><c>param2</c>: 未知, 可能为 0, 1, 2</para>
+    /// </remarks>
+    SpearFishingCommand714 = 714,
+
+    /// <summary>
+    ///     标记出叉相关技能被使用 (刺鱼、电水流)
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知</para>
+    ///     <para><c>param2</c>: PerformanceCount 的低 32 位</para>
+    ///     <para><c>param2</c>: PerformanceCount 的高 32 位</para>
+    /// </remarks>
+    MarkSpearFishingActionUsage = 715,
+
+    /// <summary>
+    ///     未知刺鱼命令
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知</para>
+    /// </remarks>
+    SpearFishingCommand716 = 716,
+
+    /// <summary>
+    ///     未知刺鱼命令
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知</para>
+    ///     <para><c>param2</c>: 未知</para>
+    ///     <para><c>param3</c>: 未知</para>
+    ///     <para><c>param4</c>: 未知</para>
+    /// </remarks>
+    SpearFishingCommand717 = 717,
+
+    /// <summary>
+    ///     未知刺鱼命令
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知</para>
+    /// </remarks>
+    SpearFishingCommand718 = 718,
 
     /// <summary>
     ///     放弃任务
@@ -612,19 +1032,41 @@ public enum ExecuteCommandFlag
     AbandonLeveQuest = 802,
 
     /// <summary>
-    ///     开始理符任务
-    ///     <remarks>
-    ///         <para><c>param1</c>: 理符任务 ID</para>
-    ///         <para><c>param2</c>: 要提高的等级数</para>
-    ///     </remarks>
+    ///     标记理符任务可被再次接取
     /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: Leve ID</para>
+    /// </remarks>
+    MarkLeveReadyToAccept = 803,
+
+    /// <summary>
+    ///     开始理符任务
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: Leve ID</para>
+    ///     <para><c>param2</c>: 要提高的等级数</para>
+    /// </remarks>
     /// <seealso cref="LeveCommand" />
     StartLeveQuest = 804,
 
     /// <summary>
-    ///     副本相关
+    ///     未知军队理符任务命令
     /// </summary>
-    Content = 808,
+    /// <remarks>
+    ///     <para><c>param1</c>: Quest ID</para>
+    /// </remarks>
+    CompanyLeveQuestCommand = 805,
+
+    /// <summary>
+    ///     请求副本相关数据 (非常广泛, 哪个事件、副本都在用)
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知</para>
+    ///     <para><c>param2</c>: 未知</para>
+    ///     <para><c>param3</c>: 未知</para>
+    ///     <para><c>param4</c>: 未知</para>
+    /// </remarks>
+    RequestContentData = 808,
 
     /// <summary>
     ///     开始指定的临危受命任务
@@ -680,6 +1122,25 @@ public enum ExecuteCommandFlag
     TerritoryTransportFinish = 816,
 
     /// <summary>
+    ///     保存魂武任务性别 (这是什么东西?)
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知, 位掩码</para>
+    ///     <para><c>param2</c>: 未知, 0 或 1</para>
+    /// </remarks>
+    SaveAnimaWeaponQuestGender = 817,
+
+    /// <summary>
+    ///     未知节日任务设置命令 (在区域还没加载好的时候请求)
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: Festival ID</para>
+    ///     <para><c>param2</c>: 未知</para>
+    ///     <para><c>param3</c>: 未知</para>
+    /// </remarks>
+    FestivalQuestWorkCommand818 = 818,
+
+    /// <summary>
     ///     离开副本
     /// </summary>
     /// <remarks>
@@ -687,6 +1148,34 @@ public enum ExecuteCommandFlag
     /// </remarks>
     /// <seealso cref="DutyCommand" />
     LeaveDuty = 819,
+
+    /// <summary>
+    ///     同步本地时区偏移至服务器
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: UTC 偏移分钟数</para>
+    ///     <para><c>param2</c>: 未知</para>
+    ///     <para><c>param3</c>: 未知</para>
+    ///     <para><c>param3</c>: 未知</para>
+    /// </remarks>
+    TimezoneSync = 820,
+
+    /// <summary>
+    ///     未知昔日重现中任务重做命令
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知</para>
+    ///     <para><c>param2</c>: 未知</para>
+    /// </remarks>
+    QuestRedoCommand821 = 821,
+
+    /// <summary>
+    ///     未知昔日重现中任务重做命令
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知</para>
+    /// </remarks>
+    QuestRedoCommand822 = 822,
 
     /// <summary>
     ///     发送单人任务战斗请求
@@ -701,10 +1190,42 @@ public enum ExecuteCommandFlag
     ///     昔日重现模式
     /// </summary>
     /// <remarks>
-    ///     <para><c>param1</c>: QuestRedo.csv 中对应的昔日重现章节序号 (0 - 退出昔日重现)</para>
+    ///     <para><c>param1</c>: QuestRedo ID (0 - 退出昔日重现)</para>
     /// </remarks>
     /// <seealso cref="QuestRedoCommand" />
     QuestRedo = 824,
+
+    /// <summary>
+    ///     继续先前的昔日重现
+    /// </summary>
+    QuestRedoContinue = 825,
+
+    /// <summary>
+    ///     删除已有的昔日重新存档
+    /// </summary>
+    QuestRedoDeleteSave = 826,
+
+    /// <summary>
+    ///     初始化昔日重现所需的界面信息
+    /// </summary>
+    QuestRedoResetUI = 827,
+
+    /// <summary>
+    ///     自动触发的 FATE 等级同步请求
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: Fate ID</para>
+    ///     <para><c>param2</c>: 0 - 取消同步, 1 - 同步</para>
+    /// </remarks>
+    FateLevelSyncAuto = 828,
+
+    /// <summary>
+    ///     未知临危受命命令
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: FATE ID</para>
+    /// </remarks>
+    FateCommand829 = 829,
 
     /// <summary>
     ///     刷新物品栏
@@ -718,6 +1239,23 @@ public enum ExecuteCommandFlag
     ///     <para><c>param1</c>: 过场剧情在 Cutscene.csv 中的对应索引</para>
     /// </remarks>
     RequestCutscene831 = 831,
+
+    /// <summary>
+    ///     未知 EventFramework 命令
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知</para>
+    /// </remarks>
+    EventFrameworkCommand832 = 832,
+
+    /// <summary>
+    ///     标记 EventTutorial 已阅读
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知</para>
+    ///     <para><c>param2</c>: EventTutorial ID</para>
+    /// </remarks>
+    MarkEventTutorialRead = 833,
 
     /// <summary>
     ///     请求成就进度数据
@@ -743,6 +1281,22 @@ public enum ExecuteCommandFlag
     RequestNearCompletionAchievement = 1002,
 
     /// <summary>
+    ///     未知 ActorControl 命令
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知</para>
+    /// </remarks>
+    ActorControlCommand1003 = 1003,
+
+    /// <summary>
+    ///     根据页面索引请求相关 FATE 关联成就数据
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 页面索引</para>
+    /// </remarks>
+    RequestFateProgressAchievement = 1009,
+
+    /// <summary>
     ///     请求全部成就数据给界面显示
     /// </summary>
     RequestAllAchievements = 1010,
@@ -755,6 +1309,46 @@ public enum ExecuteCommandFlag
     /// </remarks>
     /// <seealso cref="AchievementCommand" />
     RequestAchievementSpecial = 1011,
+
+    /// <summary>
+    ///     住房设置
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: Ward Index</para>
+    /// </remarks>
+    BuildHouse = 1100,
+
+    /// <summary>
+    ///     进入外部装潢设置模式
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: Ward Index</para>
+    /// </remarks>
+    EnterExteriorFixtures = 1101,
+
+    /// <summary>
+    ///     进入内部装潢设置模式
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: Ward Index</para>
+    /// </remarks>
+    EnterInteriorFixtures = 1102,
+
+    /// <summary>
+    ///     拆除房屋
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: Ward Index</para>
+    /// </remarks>
+    RemoveHouse = 1103,
+
+    /// <summary>
+    ///     重置房屋区域内的数据
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 固定为 255</para>
+    /// </remarks>
+    ReloadHousingArea = 1104,
 
     /// <summary>
     ///     请求抽选数据
@@ -791,6 +1385,26 @@ public enum ExecuteCommandFlag
     /// </remarks>
     /// <seealso cref="HousingCommand" />
     RequestHousingAreaData = 1107,
+
+    /// <summary>
+    ///     请求加载室外装潢背包数据
+    /// </summary>
+    LoadExteriorAppearanceInventory = 1108,
+
+    /// <summary>
+    ///     请求加载室内装潢背包数据
+    /// </summary>
+    LoadInteriorAppearanceInventory = 1109,
+
+    /// <summary>
+    ///     请求加载室外家具背包
+    /// </summary>
+    LoadExteriorFurnishInventory = 1110,
+
+    /// <summary>
+    ///     请求加载室内家具背包
+    /// </summary>
+    LoadInteriorFurnishInventory = 1111,
 
     /// <summary>
     ///     向房屋仓库存入指定的物品
@@ -837,6 +1451,15 @@ public enum ExecuteCommandFlag
     RequestHousingGreeting = 1115,
 
     /// <summary>
+    ///     未知的房屋命令
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知</para>
+    ///     <para><c>param2</c>: 未知 | 未知 &lt;&lt; 8</para>
+    /// </remarks>
+    HousingCommand1116 = 1116,
+
+    /// <summary>
     ///     请求房屋访客权限设置数据
     /// </summary>
     /// <remarks>
@@ -879,6 +1502,14 @@ public enum ExecuteCommandFlag
     SaveHousingEstateTag = 1120,
 
     /// <summary>
+    ///     刷新放置的家具数据
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 0 - 室外; 1 - 室内</para>
+    /// </remarks>
+    RequestPlacedFurnitures = 1121,
+
+    /// <summary>
     ///     移动到庭院/房屋门前
     /// </summary>
     /// <remarks>
@@ -897,6 +1528,19 @@ public enum ExecuteCommandFlag
     FurnishState = 1123,
 
     /// <summary>
+    ///     未知部队房屋命令
+    /// </summary>
+    FreeCompanyHousingCommand1124 = 1124,
+
+    /// <summary>
+    ///     未知部队房屋个人房间命令
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: Room Index</para>
+    /// </remarks>
+    FreeCompanyHousingPersonalRoomCommand1125 = 1125,
+
+    /// <summary>
     ///     查看房屋详情
     /// </summary>
     /// <remarks>
@@ -911,6 +1555,78 @@ public enum ExecuteCommandFlag
     ViewHouseDetail = 1126,
 
     /// <summary>
+    ///     未知房屋命令
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知</para>
+    ///     <para><c>param2</c>: 未知</para>
+    /// </remarks>
+    HousingCommand1127 = 1127,
+
+    /// <summary>
+    ///     请求房屋室外相关数据更新
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知, 0 或 1</para>
+    ///     <para><c>param2</c>: 未知, 0 或 1</para>
+    /// </remarks>
+    RequestHousingOutdoorTerritory = 1128,
+
+    /// <summary>
+    ///     未知游戏管理员命令
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知</para>
+    /// </remarks>
+    GMCommand1129 = 1129,
+
+    /// <summary>
+    ///     未知游戏管理员命令
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知</para>
+    /// </remarks>
+    GMCommand1130 = 1130,
+
+    /// <summary>
+    ///     未知房屋模特命令
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: IndoorTerritory 的 HouseID 地址的高 32 位</para>
+    ///     <para><c>param2</c>: IndoorTerritory 的 HouseID</para>
+    ///     <para><c>param3</c>: 未知</para>
+    ///     <para><c>param4</c>: 未知</para>
+    /// </remarks>
+    MannequinCommand1132 = 1132,
+
+    /// <summary>
+    ///     移除部队房屋
+    /// </summary>
+    RemoveFreeCompanyHouse = 1133,
+
+    /// <summary>
+    ///     请求庭院雇员出售列表数据
+    /// </summary>
+    RequestHousingRetainerList = 1134,
+
+    /// <summary>
+    ///     请求房屋共享室友/强制驱离副权限人名单
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 0 - 房屋共享; 1 - 强制驱离副权限人</para>
+    /// </remarks>
+    RequestHousingShareHolders = 1135,
+
+    /// <summary>
+    ///     未知房屋命令
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 对应区域的 HouseID 的高 32 位</para>
+    ///     <para><c>param2</c>: 对应区域的 HouseID</para>
+    /// </remarks>
+    HousingCommand1136 = 1136,
+
+    /// <summary>
     ///     调整室内环境设置
     /// </summary>
     /// <remarks>
@@ -921,14 +1637,55 @@ public enum ExecuteCommandFlag
     SetIndoorEnvironment = 1137,
 
     /// <summary>
+    ///     请求飞空艇数据
+    /// </summary>
+    RequestAirship = 1138,
+
+    /// <summary>
+    ///     未知飞空艇命令
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 飞空艇索引</para>
+    /// </remarks>
+    AirshipCommand1139 = 1139,
+
+    /// <summary>
+    ///     未知飞空艇命令
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 飞空艇索引</para>
+    /// </remarks>
+    AirshipCommand1140 = 1140,
+
+    /// <summary>
+    ///     未知飞空艇命令
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 当前选择飞空艇的某个字段</para>
+    ///     <para><c>param2</c>: 未知</para>
+    ///     <para><c>param3</c>: Inventory Type</para>
+    ///     <para><c>param4</c>: Inventory Slot</para>
+    /// </remarks>
+    AirshipCommand1141 = 1141,
+
+    /// <summary>
+    ///     未知飞空艇命令
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 当前选择飞空艇的某个字段</para>
+    ///     <para><c>param2</c>: 未知</para>
+    /// </remarks>
+    AirshipCommand1142 = 1142,
+
+    /// <summary>
     ///     刷新部队合建物品交纳信息
     /// </summary>
     RefreshFCMaterialDelivery = 1143,
 
     /// <summary>
-    ///     刷新潜水艇完成情况信息
+    ///     请求潜水艇完成情况信息
     /// </summary>
-    RefreshSubmarineInfo = 1144,
+    RequestSubmarine = 1144,
 
     /// <summary>
     ///     设置房屋背景音乐
@@ -940,16 +1697,65 @@ public enum ExecuteCommandFlag
     SetHouseBackgroundMusic = 1145,
 
     /// <summary>
+    ///     未知房屋命令
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知</para>
+    ///     <para><c>param2</c>: 未知</para>
+    ///     <para><c>param3</c>: 未知</para>
+    ///     <para><c>param4</c>: 未知</para>
+    /// </remarks>
+    HousingCommand1146 = 1146,
+
+    /// <summary>
+    ///     设置管弦乐琴播放列表
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 播放列表 ID</para>
+    /// </remarks>
+    SetOrchestrionPlaylist = 1147,
+
+    /// <summary>
+    ///     管弦乐琴播放 / 停止切换
+    /// </summary>
+    OrchestrionPlayToggle = 1148,
+
+    /// <summary>
+    ///     管弦乐琴下一曲 / 音量调整
+    /// </summary>
+    OrchestrionNextTrack = 1149,
+
+    /// <summary>
     ///     从房屋仓库中取出布置指定物品
     /// </summary>
     /// <remarks>
-    ///     <para><c>param1</c>: HouseManager 相关区域的 HouseID 地址的高 32 位</para>
+    ///     <para><c>param1</c>: HouseManager 相关区域的 HouseID 的高 32 位</para>
     ///     <para><c>param2</c>: HouseManager 相关区域的 HouseID</para>
     ///     <para><c>param3</c>: InventoryType (25000 至 25010 / 27000 至 27008)</para>
     ///     <para><c>param4</c>: InventorySlot</para>
     /// </remarks>
     /// <seealso cref="HousingCommand" />
     PlaceFurnish = 1150,
+
+    /// <summary>
+    ///     请求房屋仓库状况数据
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: HouseManager 相关区域的 HouseID 的高 32 位</para>
+    ///     <para><c>param2</c>: HouseManager 相关区域的 HouseID</para>
+    /// </remarks>
+    RequestStoreroomStatus = 1151,
+
+    /// <summary>
+    ///     未知房屋命令
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知</para>
+    ///     <para><c>param2</c>: 未知</para>
+    ///     <para><c>param3</c>: Inventory Type</para>
+    ///     <para><c>param4</c>: Inventory Slot</para>
+    /// </remarks>
+    HousingCommand1152 = 1152,
 
     /// <summary>
     ///     修理潜水艇部件
@@ -960,6 +1766,132 @@ public enum ExecuteCommandFlag
     /// </remarks>
     /// <seealso cref="SubmarineCommand" />
     RepairSubmarinePart = 1153,
+
+    /// <summary>
+    ///     请求访客留言簿数据
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: HouseManager 相关区域的 HouseID 的高 32 位</para>
+    ///     <para><c>param2</c>: HouseManager 相关区域的 HouseID</para>
+    ///     <para><c>param3</c>: 页索引</para>
+    /// </remarks>
+    RequestHousingGuestBook1154 = 1154,
+
+    /// <summary>
+    ///     请求访客留言簿数据
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: HouseManager 相关区域的 HouseID 的高 32 位</para>
+    ///     <para><c>param2</c>: HouseManager 相关区域的 HouseID</para>
+    ///     <para><c>param3</c>: 页索引</para>
+    /// </remarks>
+    RequestHousingGuestBook1155 = 1155,
+
+    /// <summary>
+    ///     请求访客留言簿数据
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: HouseManager 相关区域的 HouseID 的高 32 位</para>
+    ///     <para><c>param2</c>: HouseManager 相关区域的 HouseID</para>
+    ///     <para><c>param3</c>: 页索引</para>
+    /// </remarks>
+    RequestHousingGuestBook1156 = 1156,
+
+    /// <summary>
+    ///     请求访客留言簿数据
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: HouseManager 相关区域的 HouseID 的高 32 位</para>
+    ///     <para><c>param2</c>: HouseManager 相关区域的 HouseID</para>
+    ///     <para><c>param3</c>: 页索引</para>
+    /// </remarks>
+    RequestHousingGuestBook1157 = 1157,
+
+    /// <summary>
+    ///     请求访客留言簿数据
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: HouseManager 相关区域的 HouseID 的高 32 位</para>
+    ///     <para><c>param2</c>: HouseManager 相关区域的 HouseID</para>
+    ///     <para><c>param3</c>: 页索引</para>
+    /// </remarks>
+    RequestHousingGuestBook1158 = 1158,
+
+    /// <summary>
+    ///     未知房屋命令
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知</para>
+    ///     <para><c>param2</c>: 未知</para>
+    /// </remarks>
+    HousingCommand1159 = 1159,
+
+    /// <summary>
+    ///     打开售卖设置界面
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知, 0 或 2</para>
+    /// </remarks>
+    OpenHouseRetainerSalesSettingUI = 1160,
+
+    /// <summary>
+    ///     未知雇员市场命令
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: Inventory Type</para>
+    ///     <para><c>param2</c>: Inventory Slot</para>
+    ///     <para><c>param3</c>: 未知</para>
+    ///     <para><c>param4</c>: 未知</para>
+    /// </remarks>
+    RetainerMarketCommand1161 = 1161,
+
+    /// <summary>
+    ///     未知房屋命令
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知</para>
+    ///     <para><c>param2</c>: 未知</para>
+    ///     <para><c>param3</c>: 未知</para>
+    /// </remarks>
+    HousingCommand1162 = 1162,
+
+    /// <summary>
+    ///     打开购买界面
+    /// </summary>
+    OpenHouseRetainerBuyUI = 1163,
+
+    /// <summary>
+    ///     更新雇员姿势
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知</para>
+    ///     <para><c>param2</c>: 未知</para>
+    ///     <para><c>param3</c>: 未知</para>
+    ///     <para><c>param4</c>: 未知</para>
+    /// </remarks>
+    RequestHouseRetainerUpdatePose = 1164,
+
+    /// <summary>
+    ///     设置雇员武器
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: Inventory Type</para>
+    ///     <para><c>param2</c>: Inventory Slot</para>
+    /// </remarks>
+    SetHouseRetainerWeapon = 1165,
+
+    /// <summary>
+    ///     切换房屋雇员是否显示主手武器
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 0 - 隐藏; 1 - 显示</para>
+    /// </remarks>
+    SetHouseRetainerDrawnSword = 1166,
+
+    /// <summary>
+    ///     请求房屋数据
+    /// </summary>
+    RequestHousing = 1167,
 
     /// <summary>
     ///     请求房屋内部改建信息
@@ -979,6 +1911,15 @@ public enum ExecuteCommandFlag
     /// </remarks>
     /// <seealso cref="HousingCommand" />
     HouseInteriorDesignChange = 1169,
+
+    /// <summary>
+    ///     未知房屋内部装修风格命令
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知</para>
+    ///     <para><c>param2</c>: 未知</para>
+    /// </remarks>
+    HouseInteriorPatternCommand1170 = 1170,
 
     /// <summary>
     ///     领取战利水晶
@@ -1091,9 +2032,47 @@ public enum ExecuteCommandFlag
     RequestGSLordofVerminion = 2010,
 
     /// <summary>
-    ///     启用/解除自动加入新人频道设置
+    ///     萌宠之王小宠物编队确认
     /// </summary>
-    EnableAutoJoinNoviceNetwork = 2102,
+    VerminionPaletteConfirm = 2011,
+
+    /// <summary>
+    ///     解除新人状态
+    /// </summary>
+    DissmissNovice = 2100,
+
+    /// <summary>
+    ///     成为新人状态
+    /// </summary>
+    EnableNovice = 2101,
+
+    /// <summary>
+    ///     指导者启用/解除自动加入新人频道设置
+    /// </summary>
+    MentorAutoJoinNoviceNetwork = 2102,
+
+    /// <summary>
+    ///     是否接受新人频道邀请
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 0 - 接受; 1 - 拒绝</para>
+    /// </remarks>
+    AcceptNoviceNetworkInvitation = 2103,
+
+    /// <summary>
+    ///     解除回归者状态
+    /// </summary>
+    DismissReturner = 2104,
+
+    /// <summary>
+    ///     刷新新人频道状态 (在解除新人状态时会被调用)
+    /// </summary>
+    RequestNoviceNetwork = 2106,
+
+    /// <summary>
+    ///     认领回归者时是否一并加入新人频道
+    /// </summary>
+    ReturnerJoinNoviceNetwork = 2107,
 
     /// <summary>
     ///     发起决斗
@@ -1117,6 +2096,11 @@ public enum ExecuteCommandFlag
     ///     同意决斗
     /// </summary>
     ConfirmDuel = 2202,
+
+    /// <summary>
+    ///     未知复活命令
+    /// </summary>
+    ReviveCommand2204 = 2204,
 
     /// <summary>
     ///     确认天书奇谈副本结果
@@ -1160,6 +2144,17 @@ public enum ExecuteCommandFlag
     RestorePrsimBoxItem = 2352,
 
     /// <summary>
+    ///     将投影台中的套装物品还原
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 投影台中索引</para>
+    ///     <para><c>param2</c>: 物品位掩码低 32 位</para>
+    ///     <para><c>param3</c>: 物品位掩码高 32 位</para>
+    ///     <para>从第 1 位开始: 4, 8, 16, 32, 64, 128, 256...</para>
+    /// </remarks>
+    RestorePrsimBoxSetItem = 2353,
+
+    /// <summary>
     ///     请求投影模板数据
     /// </summary>
     RequestGlamourPlates = 2355,
@@ -1184,6 +2179,22 @@ public enum ExecuteCommandFlag
     ApplyGlamourPlate = 2357,
 
     /// <summary>
+    ///     从投影台应用幻化模板
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 模板索引</para>
+    /// </remarks>
+    ApplyGlamourPlateFromPrismBox = 2358,
+
+    /// <summary>
+    ///     为装备解除投影
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: AgentMiragePrismMiragePlateData.DispellItemsSelectedBitmask</para>
+    /// </remarks>
+    DispellItemsFromGlamour = 2359,
+
+    /// <summary>
     ///     获取时尚品鉴每周参与奖励
     /// </summary>
     FashionCheckEntryReward = 2450,
@@ -1192,6 +2203,21 @@ public enum ExecuteCommandFlag
     ///     获取时尚品鉴每周额外奖励
     /// </summary>
     FashionCheckBonusReward = 2451,
+
+    /// <summary>
+    ///     时尚品鉴新增装备条目与额外奖励
+    /// </summary>
+    FashionCheckAddEntryAndBonusReward = 2452,
+
+    /// <summary>
+    ///     未知时尚品鉴指令
+    /// </summary>
+    FashionCheckCommand2453 = 2453,
+
+    /// <summary>
+    ///     请求重建多玛相关数据
+    /// </summary>
+    RequestDomanEnclave = 2500,
 
     /// <summary>
     ///     买回支援物资
@@ -1242,7 +2268,7 @@ public enum ExecuteCommandFlag
     ///     EventFramework 动作
     /// </summary>
     /// <remarks>
-    ///     <para><c>param1</c>：事件ID - 分解：3735552；回收魔晶石：3735553；精选：3735554；修理：3735555</para>
+    ///     <para><c>param1</c>：事件ID - 分解：3735552；回收魔晶石：3735553；修理：3735555</para>
     ///     <br />
     ///     <para>修理（3735555)</para>
     ///     <para><c>param2</c>：类型 - 修理装备中物品：2；修理分页物品：3；修理单独物品：物品（InventorySlot &lt;&lt; 16）| 1</para>
@@ -1263,6 +2289,11 @@ public enum ExecuteCommandFlag
     EventFrameworkAction = 2800,
 
     /// <summary>
+    ///     请求博兹雅战果记录数据更新
+    /// </summary>
+    RequestBozjaWarResultNotebook = 2900,
+
+    /// <summary>
     ///     博兹雅分配失传技能库到技能槽
     /// </summary>
     /// <remarks>
@@ -1273,9 +2304,65 @@ public enum ExecuteCommandFlag
     BozjaUseFromHolster = 2950,
 
     /// <summary>
+    ///     在博兹雅/高原副本区域以外地区查看失传技能库
+    /// </summary>
+    RequestBozjaHolsterOutside = 2951,
+
+    /// <summary>
+    ///     场景跳转 (Lua 触发)
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知</para>
+    ///     <para><c>param2</c>: 未知</para>
+    ///     <para><c>param3</c>: 未知</para>
+    ///     <para><c>param4</c>: 未知</para>
+    /// </remarks>
+    PrepareSceneJump = 3000,
+
+    /// <summary>
+    ///     场景跳转 (Lua 触发)
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知 (可能是 X 坐标)</para>
+    ///     <para><c>param2</c>: 未知 (可能是 Y 坐标)</para>
+    ///     <para><c>param3</c>: 未知 (可能是 Z 坐标)</para>
+    ///     <para><c>param4</c>: 未知 (可能是面向)</para>
+    /// </remarks>
+    SceneJump = 3001,
+
+    /// <summary>
+    ///     无人岛捕获动物
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 动物 BaseID</para>
+    ///     <para><c>param2</c>: 动物 EntityID</para>
+    ///     <para><c>param3</c>: MJIManager.CurrentMode</para>
+    ///     <para><c>param4</c>: MJIManager.CurrentModeItem</para>
+    /// </remarks>
+    MJICaptureMonster = 3050,
+
+    /// <summary>
+    ///     请求部分物品的解锁状态
+    /// </summary>
+    RequestItemActionUnlockState = 3100,
+
+    /// <summary>
+    ///     请求服务器的特定值
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: ID</para>
+    /// </remarks>
+    GetServerValue = 3150,
+
+    /// <summary>
     ///     请求肖像列表数据
     /// </summary>
     RequestPortraits = 3200,
+
+    /// <summary>
+    ///     请求铭牌数据
+    /// </summary>
+    RequestCharaCard = 3201,
 
     /// <summary>
     ///     切换无人岛模式
@@ -1312,6 +2399,14 @@ public enum ExecuteCommandFlag
     /// </remarks>
     /// <seealso cref="MJICommand" />
     MJIWorkshopRequest = 3254,
+
+    /// <summary>
+    ///     请求预计所需要消耗的无人岛材料
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知, 可能为 0, 1, 2</para>
+    /// </remarks>
+    MJIItemConsumptionPreviewRequest = 3255,
 
     /// <summary>
     ///     请求无人岛工房排班物品数据
@@ -1476,9 +2571,40 @@ public enum ExecuteCommandFlag
     MJIFarmCollectAll = 3282,
 
     /// <summary>
+    ///     旅馆内播放管弦乐琴乐谱
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: Orchestrion ID</para>
+    /// </remarks>
+    OrchestrionPlayTrack = 3283,
+
+    /// <summary>
     ///     请求无人岛工房需求数据
     /// </summary>
     MJIFavorStateRequest = 3292,
+
+    /// <summary>
+    ///     移除收藏夹内的以太之光
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 以太之光 ID</para>
+    /// </remarks>
+    RemoveFavoriteAetheryte = 3350,
+
+    /// <summary>
+    ///     移除免费传送点
+    /// </summary>
+    RemoveFreeAetheryte = 3351,
+
+    /// <summary>
+    ///     移除 PlayStation Plus 会员可设置的免费传送点
+    /// </summary>
+    RemovePSPlusFreeAetheryte = 3352,
+
+    /// <summary>
+    ///     移除 Nintendo Switch Online 会员可设置的免费传送点
+    /// </summary>
+    RemoveNSOFreeAetheryte = 3353,
 
     /// <summary>
     ///     变更宇宙探索模式
@@ -1490,14 +2616,22 @@ public enum ExecuteCommandFlag
     WKSChangeMode = 3400,
 
     /// <summary>
-    ///     宇宙探索结束交互1
+    ///     宇宙探索结束交互
     /// </summary>
-    WKSEndInteraction1 = 3401,
+    WKSEndInteraction3401 = 3401,
 
     /// <summary>
-    ///     宇宙探索结束交互2
+    ///     宇宙探索结束交互
     /// </summary>
-    WKSEndInteraction2 = 3402,
+    WKSEndInteraction3402 = 3402,
+
+    /// <summary>
+    ///     未知的宇宙探索命令 (大概和星球建设进度推进至新阶段有关)
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: WKSDevGrade 的 Unknown13</para>
+    /// </remarks>
+    WKSDevelopmentCommand = 3403,
 
     /// <summary>
     ///     宇宙探索接取任务
@@ -1561,6 +2695,28 @@ public enum ExecuteCommandFlag
     WKSRequestMecha = 3478,
 
     /// <summary>
+    ///     请求副本物品栏 (在区域变化时自动发送)
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: ContentInventoryProvider 偏移 8 处字段</para>
+    /// </remarks>
+    RequestContentInventory = 3500,
+
+    /// <summary>
+    ///     请求大型副本数据 (看起来会在某个内部字段过期后自动发送一次请求新的)
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 未知</para>
+    ///     <para><c>param2</c>: 未知</para>
+    /// </remarks>
+    RequestMassivePcContent = 3600,
+
+    /// <summary>
+    ///     未知的任务命令 (是不是任务相关都不好说)
+    /// </summary>
+    QuestCommand4000 = 4000,
+
+    /// <summary>
     ///     掷骰子
     /// </summary>
     /// <remarks>
@@ -1571,8 +2727,21 @@ public enum ExecuteCommandFlag
     RollDice = 9000,
 
     /// <summary>
+    ///     请求妖怪手表联动活动信息 (每 5 秒发送一次)
+    /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 固定为 39</para>
+    /// </remarks>
+    RequestYokaiWatchState = 9002,
+
+    /// <summary>
     ///     雇员
     /// </summary>
+    /// <remarks>
+    ///     <para><c>param1</c>: 固定为 0</para>
+    ///     <para><c>param2</c>: 3 - 返回雇员; 4 - 刷新信息; 5 - 委托探险; 6 - 撤销探险</para>
+    ///     <para><c>param3</c>: 委托探险时 - RetainerTask ID</para>
+    /// </remarks>
     Retainer = 9003,
 
     /// <summary>

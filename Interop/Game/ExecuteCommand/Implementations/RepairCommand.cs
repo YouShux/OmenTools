@@ -16,8 +16,8 @@ public sealed class RepairCommand : ExecuteCommandBase
     /// <summary>
     ///     取消修理委托
     /// </summary>
-    public static void CancelRequest(uint targetEntityID) =>
-        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.CancelRepairRequest, targetEntityID);
+    public static void CancelRequest() =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.CancelRepairRequest);
 
     /// <summary>
     ///     修理装备中物品
