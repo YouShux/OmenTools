@@ -38,6 +38,12 @@ public sealed class PVPCommand : ExecuteCommandBase
         ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.RequestDuel, 4);
 
     /// <summary>
+    ///     同意决斗
+    /// </summary>
+    public static void ConfirmDuelDirect() =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.ConfirmDuel);
+
+    /// <summary>
     ///     领取战利水晶
     /// </summary>
     public static void CollectTrophyCrystal(Season season = Season.Current) =>

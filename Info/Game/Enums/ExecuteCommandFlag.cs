@@ -1430,7 +1430,7 @@ public enum ExecuteCommandFlag
     RequestAchievementSpecial = 1011,
 
     /// <summary>
-    ///     住房设置
+    ///     建造房屋
     /// </summary>
     /// <remarks>
     ///     <para><c>param1</c>: Ward Index</para>

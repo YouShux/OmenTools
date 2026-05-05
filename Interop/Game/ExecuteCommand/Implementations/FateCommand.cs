@@ -25,6 +25,12 @@ public sealed class FateCommand : ExecuteCommandBase
         ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.FateLevelSync, fateID);
 
     /// <summary>
+    ///     自动触发临危受命等级同步请求
+    /// </summary>
+    public static void AutoSyncLevel(uint fateID, bool isSync) =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.FateLevelSyncAuto, fateID, isSync ? 1U : 0U);
+
+    /// <summary>
     ///     加载临危受命信息
     /// </summary>
     public static void Load(uint fateID) =>

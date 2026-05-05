@@ -13,6 +13,24 @@ public sealed class GlamourPlateCommand : ExecuteCommandBase
         ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.ApplyGlamourPlate, plateIndex);
 
     /// <summary>
+    ///     从投影台应用幻化模板
+    /// </summary>
+    public static void ApplyFromPrismBox(uint plateIndex) =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.ApplyGlamourPlateFromPrismBox, plateIndex);
+
+    /// <summary>
+    ///     请求投影模板数据
+    /// </summary>
+    public static void Request() =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.RequestGlamourPlates);
+
+    /// <summary>
+    ///     为装备解除投影
+    /// </summary>
+    public static void DispellItems(uint dispellItemsSelectedBitmask) =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.DispellItemsFromGlamour, dispellItemsSelectedBitmask);
+
+    /// <summary>
     ///     进入投影模板选择状态
     /// </summary>
     public static void Enter() =>

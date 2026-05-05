@@ -19,6 +19,18 @@ public sealed class WKSCommand : ExecuteCommandBase
         ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.WKSStartMission, missionUnitID);
 
     /// <summary>
+    ///     宇宙探索完成任务
+    /// </summary>
+    public static void CompleteMission() =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.WKSCompleteMission);
+
+    /// <summary>
+    ///     宇宙探索放弃任务
+    /// </summary>
+    public static void AbandonMission() =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.WKSAbandonMission);
+
+    /// <summary>
     ///     宇宙好运道开始抽奖
     /// </summary>
     public static void StartLottery(CurrencyKind currencyKind) =>
@@ -47,6 +59,24 @@ public sealed class WKSCommand : ExecuteCommandBase
     /// </summary>
     public static void RequestInactiveMecha() =>
         ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.WKSRequestMecha);
+
+    /// <summary>
+    ///     宇宙探索结束交互
+    /// </summary>
+    public static void EndInteraction() =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.WKSEndInteraction3401);
+
+    /// <summary>
+    ///     宇宙探索结束交互
+    /// </summary>
+    public static void EndInteractionAlternate() =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.WKSEndInteraction3402);
+
+    /// <summary>
+    ///     宇宙探索请求探索成果数据
+    /// </summary>
+    public static void RequestSuccesses() =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.WKSRequestSuccesses);
 
     public enum CurrencyKind : uint
     {

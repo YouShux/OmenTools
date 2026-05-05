@@ -20,6 +20,18 @@ public sealed class RepairCommand : ExecuteCommandBase
         ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.CancelRepairRequest);
 
     /// <summary>
+    ///     开始修理委托
+    /// </summary>
+    public static void StartRequest() =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.StartRepairRequest);
+
+    /// <summary>
+    ///     确认本地已进行修理委托动作
+    /// </summary>
+    public static void ConfirmRequest() =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.ConfirmRepairRequest);
+
+    /// <summary>
     ///     修理装备中物品
     /// </summary>
     public static void RepairEquippedItems() =>

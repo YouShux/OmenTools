@@ -17,4 +17,10 @@ public sealed class PrsimBoxCommand : ExecuteCommandBase
     /// </summary>
     public static void Restore(uint prismBoxItemID) =>
         ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.RestorePrsimBoxItem, prismBoxItemID);
+
+    /// <summary>
+    ///     将投影台中的套装物品还原
+    /// </summary>
+    public static void RestoreSetItem(uint prismBoxIndex, uint slotMaskLow, uint slotMaskHigh) =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.RestorePrsimBoxSetItem, prismBoxIndex, slotMaskLow, slotMaskHigh);
 }

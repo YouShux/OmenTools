@@ -19,4 +19,16 @@ public sealed class LeveCommand : ExecuteCommandBase
     /// </summary>
     public static void Start(uint levequestID, uint levelToIncrease) =>
         ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.StartLeveQuest, levequestID, levelToIncrease);
+
+    /// <summary>
+    ///     刷新理符任务状态
+    /// </summary>
+    public static void Refresh() =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.RefreshLeveQuest);
+
+    /// <summary>
+    ///     标记理符任务可被再次接取
+    /// </summary>
+    public static void MarkReadyToAccept(uint leveID) =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.MarkLeveReadyToAccept, leveID);
 }

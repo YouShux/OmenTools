@@ -8,6 +8,48 @@ namespace OmenTools.Interop.Game.ExecuteCommand.Implementations;
 public sealed unsafe class HousingCommand : ExecuteCommandBase
 {
     /// <summary>
+    ///     请求访客留言簿数据
+    /// </summary>
+    public static void Request(PageKind pageKind, uint houseIDHigh, uint houseID, uint pageIndex) =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ToFlag(pageKind), houseIDHigh, houseID, pageIndex);
+    
+    /// <summary>
+    ///     建造房屋
+    /// </summary>
+    public static void Build(uint wardIndex) =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.BuildHouse, wardIndex);
+
+    /// <summary>
+    ///     进入外部装潢设置模式
+    /// </summary>
+    public static void EnterExteriorFixtures(uint wardIndex) =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.EnterExteriorFixtures, wardIndex);
+
+    /// <summary>
+    ///     进入内部装潢设置模式
+    /// </summary>
+    public static void EnterInteriorFixtures(uint wardIndex) =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.EnterInteriorFixtures, wardIndex);
+
+    /// <summary>
+    ///     拆除房屋
+    /// </summary>
+    public static void Remove(uint wardIndex) =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.RemoveHouse, wardIndex);
+
+    /// <summary>
+    ///     重置房屋区域内的数据
+    /// </summary>
+    public static void ReloadArea() =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.ReloadHousingArea, 255);
+
+    /// <summary>
+    ///     移除部队房屋
+    /// </summary>
+    public static void RemoveFreeCompanyHouse() =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.RemoveFreeCompanyHouse);
+    
+    /// <summary>
     ///     设置房屋背景音乐
     /// </summary>
     public static void SetBGM(uint orchestrionRowID) =>
@@ -178,6 +220,84 @@ public sealed unsafe class HousingCommand : ExecuteCommandBase
     public static void ChangeInteriorDesign(InteriorDesignStyle style) =>
         ExecuteCommandManager.Instance().ExecuteCommand
             (ExecuteCommandFlag.HouseInteriorDesignChange, (uint)HousingManager.Instance()->GetCurrentPlot(), (uint)style);
+    
+    /// <summary>
+    ///     请求加载室外装潢背包数据
+    /// </summary>
+    public static void LoadExteriorAppearance() =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.LoadExteriorAppearanceInventory);
+
+    /// <summary>
+    ///     请求加载室内装潢背包数据
+    /// </summary>
+    public static void LoadInteriorAppearance() =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.LoadInteriorAppearanceInventory);
+
+    /// <summary>
+    ///     请求加载室外家具背包
+    /// </summary>
+    public static void LoadExteriorFurnish() =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.LoadExteriorFurnishInventory);
+
+    /// <summary>
+    ///     请求加载室内家具背包
+    /// </summary>
+    public static void LoadInteriorFurnish() =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.LoadInteriorFurnishInventory);
+
+    /// <summary>
+    ///     刷新放置的家具数据
+    /// </summary>
+    public static void RequestPlacedFurnitures(bool isIndoor) =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.RequestPlacedFurnitures, isIndoor ? 1U : 0U);
+    
+    /// <summary>
+    ///     请求房屋共享室友名单
+    /// </summary>
+    public static void RequestShareHolders() =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.RequestHousingShareHolders);
+
+    /// <summary>
+    ///     请求强制驱离副权限人名单
+    /// </summary>
+    public static void RequestEvictionHolders() =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.RequestHousingShareHolders, 1);
+
+    /// <summary>
+    ///     请求房屋仓库状况数据
+    /// </summary>
+    public static void RequestStoreroomStatus(uint houseIDHigh, uint houseID) =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.RequestStoreroomStatus, houseIDHigh, houseID);
+
+    /// <summary>
+    ///     请求房屋数据
+    /// </summary>
+    public static void RequestHousing() =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.RequestHousing);
+    
+    /// <summary>
+    ///     请求庭院雇员出售列表数据
+    /// </summary>
+    public static void RequestList() =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.RequestHousingRetainerList);
+
+    /// <summary>
+    ///     打开购买界面
+    /// </summary>
+    public static void OpenBuyUI() =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.OpenHouseRetainerBuyUI);
+
+    /// <summary>
+    ///     设置雇员武器
+    /// </summary>
+    public static void SetWeapon(InventoryType inventoryType, uint inventorySlot) =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.SetHouseRetainerWeapon, (uint)inventoryType, inventorySlot);
+
+    /// <summary>
+    ///     切换房屋雇员是否显示主手武器
+    /// </summary>
+    public static void SetDrawnSword(bool isVisible) =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.SetHouseRetainerDrawnSword, isVisible ? 1U : 0U);
 
     private static uint GetEstateTagFlag(uint tagIndexFirst, uint tagIndexSecond, uint tagIndexThird) =>
         tagIndexFirst << 16 | tagIndexSecond << 8 | tagIndexThird;
@@ -207,6 +327,25 @@ public sealed unsafe class HousingCommand : ExecuteCommandBase
         }
 
         return (0, 0);
+    }
+    
+    private static ExecuteCommandFlag ToFlag(PageKind pageKind) =>
+        pageKind switch
+        {
+            PageKind.Page1154 => ExecuteCommandFlag.RequestHousingGuestBook1154,
+            PageKind.Page1155 => ExecuteCommandFlag.RequestHousingGuestBook1155,
+            PageKind.Page1156 => ExecuteCommandFlag.RequestHousingGuestBook1156,
+            PageKind.Page1157 => ExecuteCommandFlag.RequestHousingGuestBook1157,
+            _                 => ExecuteCommandFlag.RequestHousingGuestBook1158
+        };
+
+    public enum PageKind : uint
+    {
+        Page1154 = 1154,
+        Page1155 = 1155,
+        Page1156 = 1156,
+        Page1157 = 1157,
+        Page1158 = 1158
     }
 
     public enum HouseTerritory : uint

@@ -8,6 +8,17 @@ namespace OmenTools.Interop.Game.ExecuteCommand.Implementations;
 public sealed unsafe class MJICommand : ExecuteCommandBase
 {
     /// <summary>
+    ///     无人岛捕获动物
+    /// </summary>
+    public static void CaptureMonster(uint animalBaseID, uint animalEntityID, uint currentMode, uint currentModeItem) =>
+        ExecuteCommandManager.Instance().ExecuteCommand(
+            ExecuteCommandFlag.MJICaptureMonster,
+            animalBaseID,
+            animalEntityID,
+            currentMode,
+            currentModeItem);
+    
+    /// <summary>
     ///     切换无人岛模式
     /// </summary>
     public static void SetMode(Mode mode) =>
@@ -48,6 +59,12 @@ public sealed unsafe class MJICommand : ExecuteCommandBase
     /// </summary>
     public static void RequestWorkshop(uint cycleDay) =>
         ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.MJIWorkshopRequest, cycleDay);
+
+    /// <summary>
+    ///     请求无人岛工房排班物品数据
+    /// </summary>
+    public static void RequestWorkshopItem() =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.MJIWorkshopRequestItem);
 
     /// <summary>
     ///     添加无人岛工房排班
@@ -153,6 +170,12 @@ public sealed unsafe class MJICommand : ExecuteCommandBase
     /// </summary>
     public static void CollectAllFarms() =>
         ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.MJIFarmCollectAll, *(uint*)MJIManager.Instance()->GranariesState);
+
+    /// <summary>
+    ///     请求无人岛工房需求数据
+    /// </summary>
+    public static void RequestFavorState() =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.MJIFavorStateRequest);
 
     private static uint BuildScheduleParam(uint startingHour, uint craftObjectID) =>
         8 * (startingHour | 32 * craftObjectID);

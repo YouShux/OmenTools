@@ -17,4 +17,10 @@ public sealed class ReviveCommand : ExecuteCommandBase
     /// </summary>
     public static void ReturnToHomePoint() =>
         ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.Revive, 8);
+
+    /// <summary>
+    ///     拒绝复活请求
+    /// </summary>
+    public static void Reject() =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.RejectRevive);
 }

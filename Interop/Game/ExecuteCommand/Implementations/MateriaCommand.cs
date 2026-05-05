@@ -25,6 +25,18 @@ public sealed class MateriaCommand : ExecuteCommandBase
     public static void LeaveAttachState() =>
         ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.LeaveMateriaAttachState);
 
+    /// <summary>
+    ///     请求帮助镶嵌魔晶石
+    /// </summary>
+    public static void SendAttachRequest(uint targetEntityID) =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.SendMateriaAttachRequest, targetEntityID);
+
+    /// <summary>
+    ///     因职业变更自动取消魔晶石镶嵌委托
+    /// </summary>
+    public static void CancelAttachRequest() =>
+        ExecuteCommandManager.Instance().ExecuteCommand(ExecuteCommandFlag.CancelMateriaAttachRequest);
+
     // TODO: 需要确定是否可用
     /// <summary>
     ///     精制魔晶石
