@@ -267,20 +267,8 @@ public unsafe class ChatManager : OmenServiceBase<ChatManager>
     {
         if (message.Length == 0) return;
 
-        using var builder = new RentedSeStringBuilder();
-        message = builder.Builder.Append(message).ToReadOnlySeString().ToDalamudString().EncodeWithNullTerminator();
-
-        var utf8String = Utf8String.FromSequence(message);
-
-        try
-        {
-            ProcessChatBoxEntryDetour(UIModule.Instance(), utf8String, (nint)utf8String, saveToHistory);
-            // 避免折叠
-        }
-        finally
-        {
-            utf8String->Dtor(true);
-        }
+        using var utf8String = new Utf8String(message);
+        ProcessChatBoxEntryDetour(UIModule.Instance(), &utf8String, (nint)(&utf8String), saveToHistory);
     }
 
     public void SendCommand(string command)
@@ -296,20 +284,8 @@ public unsafe class ChatManager : OmenServiceBase<ChatManager>
     {
         if (command.Length == 0) return;
 
-        using var builder = new RentedSeStringBuilder();
-        command = builder.Builder.Append(command).ToReadOnlySeString().ToDalamudString().EncodeWithNullTerminator();
-
-        var utf8String = Utf8String.FromSequence(command);
-
-        try
-        {
-            ExecuteCommandInnerDetour((ShellCommandModule*)RaptureShellModule.Instance(), utf8String, UIModule.Instance());
-            // 避免折叠
-        }
-        finally
-        {
-            utf8String->Dtor(true);
-        }
+        using var utf8String = new Utf8String(command);
+        ExecuteCommandInnerDetour((ShellCommandModule*)RaptureShellModule.Instance(), &utf8String, UIModule.Instance());
     }
 
     public static string SanitiseText(string text)
