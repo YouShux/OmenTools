@@ -4,15 +4,15 @@ using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
-using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Hooking;
-using Dalamud.Memory;
+using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Enums;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using InteropGenerator.Runtime;
 using Lumina.Excel.Sheets;
+using Lumina.Text.ReadOnly;
 using OmenTools.Interop.Game.Lumina;
 using OmenTools.Interop.Game.Models;
 using OmenTools.OmenService.Abstractions;
@@ -100,7 +100,7 @@ public unsafe class GameTooltipManager : OmenServiceBase<GameTooltipManager>
     private readonly ConcurrentDictionary<TooltipRuleType, ImmutableList<TooltipRule>> rulesCollection = [];
 
     private readonly TooltipActionDetail hoveredActionDetail = new();
-    private          SeString            weatherTooltipText  = SeString.Empty;
+    private          ReadOnlySeString    weatherTooltipText;
 
     #endregion
 
@@ -143,7 +143,7 @@ public unsafe class GameTooltipManager : OmenServiceBase<GameTooltipManager>
 
     #region 公共接口
 
-    public SeString GetShowenWeatherTooltip() =>
+    public ReadOnlySeString GetShowenWeatherTooltip() =>
         weatherTooltipText;
 
     #endregion
@@ -539,19 +539,25 @@ public unsafe class ItemTooltipContext
 
     public StringArrayData* StringArray { get; }
 
-    public SeString Get(TooltipItemType type) =>
+    public ReadOnlySeString Get(TooltipItemType type) =>
         TooltipTextHelper.Get(StringArray, (int)type);
 
-    public void Set(TooltipItemType type, SeString text) =>
+    public void Set(TooltipItemType type, ReadOnlySeString text) =>
         TooltipTextHelper.Set(StringArray, (int)type, text);
 
-    public void Append(TooltipItemType type, SeString text) =>
-        Set(type, Get(type).Append(text));
+    public void Append(TooltipItemType type, ReadOnlySeString text)
+    {
+        using var builder = new RentedSeStringBuilder();
+        Set(type, builder.Builder.Append(Get(type)).Append(text).ToReadOnlySeString());
+    }
 
-    public void Prepend(TooltipItemType type, SeString text) =>
-        Set(type, new SeString().Append(text).Append(Get(type)));
+    public void Prepend(TooltipItemType type, ReadOnlySeString text)
+    {
+        using var builder = new RentedSeStringBuilder();
+        Set(type, builder.Builder.Append(text).Append(Get(type)).ToReadOnlySeString());
+    }
 
-    public void Replace(TooltipItemType type, Func<SeString, SeString> replace) =>
+    public void Replace(TooltipItemType type, Func<ReadOnlySeString, ReadOnlySeString> replace) =>
         Set(type, replace(Get(type)));
 
     public void Replace(TooltipItemType type, string regexPattern, string replacement) =>
@@ -590,19 +596,25 @@ public unsafe class ActionTooltipContext
 
     public StringArrayData* StringArray { get; }
 
-    public SeString Get(TooltipActionType type) =>
+    public ReadOnlySeString Get(TooltipActionType type) =>
         TooltipTextHelper.Get(StringArray, (int)type);
 
-    public void Set(TooltipActionType type, SeString text) =>
+    public void Set(TooltipActionType type, ReadOnlySeString text) =>
         TooltipTextHelper.Set(StringArray, (int)type, text);
 
-    public void Append(TooltipActionType type, SeString text) =>
-        Set(type, Get(type).Append(text));
+    public void Append(TooltipActionType type, ReadOnlySeString text)
+    {
+        using var builder = new RentedSeStringBuilder();
+        Set(type, builder.Builder.Append(Get(type)).Append(text).ToReadOnlySeString());
+    }
 
-    public void Prepend(TooltipActionType type, SeString text) =>
-        Set(type, new SeString().Append(text).Append(Get(type)));
+    public void Prepend(TooltipActionType type, ReadOnlySeString text)
+    {
+        using var builder = new RentedSeStringBuilder();
+        Set(type, builder.Builder.Append(text).Append(Get(type)).ToReadOnlySeString());
+    }
 
-    public void Replace(TooltipActionType type, Func<SeString, SeString> replace) =>
+    public void Replace(TooltipActionType type, Func<ReadOnlySeString, ReadOnlySeString> replace) =>
         Set(type, replace(Get(type)));
 
     public void Replace(TooltipActionType type, string regexPattern, string replacement) =>
@@ -653,19 +665,25 @@ public unsafe class TooltipShowContext
 
     public AtkTooltipManager.AtkTooltipArgs* Args { get; }
 
-    public SeString Text =>
-        Args == null || Args->TextArgs.Text.Value == null ? SeString.Empty : TooltipTextHelper.Get(Args->TextArgs.Text);
+    public ReadOnlySeString Text =>
+        Args == null || Args->TextArgs.Text.Value == null ? new() : TooltipTextHelper.Get(Args->TextArgs.Text);
 
-    public void SetText(SeString text) =>
+    public void SetText(ReadOnlySeString text) =>
         TooltipTextHelper.Set(ref Args->TextArgs.Text, text);
 
-    public void AppendText(SeString text) =>
-        SetText(Text.Append(text));
+    public void AppendText(ReadOnlySeString text)
+    {
+        using var builder = new RentedSeStringBuilder();
+        SetText(builder.Builder.Append(Text).Append(text).ToReadOnlySeString());
+    }
 
-    public void PrependText(SeString text) =>
-        SetText(new SeString().Append(text).Append(Text));
+    public void PrependText(ReadOnlySeString text)
+    {
+        using var builder = new RentedSeStringBuilder();
+        SetText(builder.Builder.Append(text).Append(Text).ToReadOnlySeString());
+    }
 
-    public void ReplaceText(Func<SeString, SeString> replace) =>
+    public void ReplaceText(Func<ReadOnlySeString, ReadOnlySeString> replace) =>
         SetText(replace(Text));
 
     public void ReplaceText(string regexPattern, string replacement) =>
@@ -767,30 +785,28 @@ public class TooltipActionDetail
 
 internal static unsafe class TooltipTextHelper
 {
-    public static SeString Get(StringArrayData* stringArrayData, int index)
+    public static ReadOnlySeString Get(StringArrayData* stringArrayData, int index)
     {
         if (stringArrayData == null || index < 0 || index >= stringArrayData->Size)
-            return SeString.Empty;
+            return new();
 
         return Get(stringArrayData->StringArray[index]);
     }
 
-    public static SeString Get(CStringPointer cStringPointer) =>
-        cStringPointer.Value == null ? SeString.Empty : MemoryHelper.ReadSeStringNullTerminated((nint)cStringPointer.Value);
+    public static ReadOnlySeString Get(CStringPointer cStringPointer) =>
+        cStringPointer.Value == null ? new() : cStringPointer.AsReadOnlySeString();
 
-    public static void Set(StringArrayData* stringArrayData, int index, SeString text)
+    public static void Set(StringArrayData* stringArrayData, int index, ReadOnlySeString text)
     {
         if (stringArrayData == null || index < 0 || index >= stringArrayData->Size)
             return;
 
-        text ??= SeString.Empty;
-        stringArrayData->SetValue(index, text.EncodeWithNullTerminator(), false);
+        stringArrayData->SetValue(index, text.ToDalamudString().EncodeWithNullTerminator(), false);
     }
 
-    public static void Set(ref CStringPointer target, SeString text)
+    public static void Set(ref CStringPointer target, ReadOnlySeString text)
     {
-        text ??= SeString.Empty;
-        var bytes = text.EncodeWithNullTerminator();
+        var bytes = text.ToDalamudString().EncodeWithNullTerminator();
         var ptr   = (byte*)Marshal.AllocHGlobal(bytes.Length);
 
         for (var i = 0; i < bytes.Length; i++)
@@ -799,14 +815,14 @@ internal static unsafe class TooltipTextHelper
         target = ptr;
     }
 
-    public static SeString Replace(SeString text, string regexPattern, string replacement)
+    public static ReadOnlySeString Replace(ReadOnlySeString text, string regexPattern, string replacement)
     {
         if (string.IsNullOrEmpty(regexPattern))
             return text;
 
         try
         {
-            return new SeString().Append(Regex.Replace(text.TextValue, regexPattern, replacement));
+            return new ReadOnlySeString(Regex.Replace(text.ExtractText(), regexPattern, replacement));
         }
         catch
         {
