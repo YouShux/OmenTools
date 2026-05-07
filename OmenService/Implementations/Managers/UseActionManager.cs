@@ -394,17 +394,17 @@ public unsafe class UseActionManager : OmenServiceBase<UseActionManager>
         byte           a7
     )
     {
+        var location0 = location != null ? *location : Vector3.Zero;
+        
         if (Config.ShowUseActionLocationLog)
         {
             DLog.Debug
             (
-                $"[Use Action Manager] 地面类技能\n类型:{type} | ID:{actionID} | 目标ID: {targetID} | 地点:{*location} | 额外参数:{extraParam}"
+                $"[Use Action Manager] 地面类技能\n类型:{type} | ID:{actionID} | 目标ID: {targetID} | 地点:{location0} | 额外参数:{extraParam}"
             );
         }
 
         var isPrevented = false;
-        var location0   = *location;
-
         if (methodsCollection.TryGetValue(typeof(PreUseActionLocationDelegate), out var preDelegates))
         {
             foreach (var preDelegate in preDelegates)
@@ -481,7 +481,7 @@ public unsafe class UseActionManager : OmenServiceBase<UseActionManager>
     {
         var actionType   = (ActionType)type;
         var battlePlayer = IBattleChara.Create((nint)player);
-        var location     = *locationPtr;
+        var location     = locationPtr != null ? *locationPtr : Vector3.Zero;
 
         if (Config.ShowCharacterCompleteCastLog)
         {
