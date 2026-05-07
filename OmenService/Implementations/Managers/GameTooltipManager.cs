@@ -547,14 +547,12 @@ public unsafe class ItemTooltipContext
 
     public void Append(TooltipItemType type, ReadOnlySeString text)
     {
-        using var builder = new RentedSeStringBuilder();
-        Set(type, builder.Builder.Append(Get(type)).Append(text).ToReadOnlySeString());
+        Set(type, TooltipTextHelper.Append(Get(type), text));
     }
 
     public void Prepend(TooltipItemType type, ReadOnlySeString text)
     {
-        using var builder = new RentedSeStringBuilder();
-        Set(type, builder.Builder.Append(text).Append(Get(type)).ToReadOnlySeString());
+        Set(type, TooltipTextHelper.Prepend(Get(type), text));
     }
 
     public void Replace(TooltipItemType type, Func<ReadOnlySeString, ReadOnlySeString> replace) =>
@@ -604,14 +602,12 @@ public unsafe class ActionTooltipContext
 
     public void Append(TooltipActionType type, ReadOnlySeString text)
     {
-        using var builder = new RentedSeStringBuilder();
-        Set(type, builder.Builder.Append(Get(type)).Append(text).ToReadOnlySeString());
+        Set(type, TooltipTextHelper.Append(Get(type), text));
     }
 
     public void Prepend(TooltipActionType type, ReadOnlySeString text)
     {
-        using var builder = new RentedSeStringBuilder();
-        Set(type, builder.Builder.Append(text).Append(Get(type)).ToReadOnlySeString());
+        Set(type, TooltipTextHelper.Prepend(Get(type), text));
     }
 
     public void Replace(TooltipActionType type, Func<ReadOnlySeString, ReadOnlySeString> replace) =>
@@ -673,14 +669,12 @@ public unsafe class TooltipShowContext
 
     public void AppendText(ReadOnlySeString text)
     {
-        using var builder = new RentedSeStringBuilder();
-        SetText(builder.Builder.Append(Text).Append(text).ToReadOnlySeString());
+        SetText(TooltipTextHelper.Append(Text, text));
     }
 
     public void PrependText(ReadOnlySeString text)
     {
-        using var builder = new RentedSeStringBuilder();
-        SetText(builder.Builder.Append(text).Append(Text).ToReadOnlySeString());
+        SetText(TooltipTextHelper.Prepend(Text, text));
     }
 
     public void ReplaceText(Func<ReadOnlySeString, ReadOnlySeString> replace) =>
@@ -828,6 +822,36 @@ internal static unsafe class TooltipTextHelper
         {
             return text;
         }
+    }
+
+    public static ReadOnlySeString Append(ReadOnlySeString current, ReadOnlySeString text)
+    {
+        if (text.IsEmpty)
+            return current;
+
+        var currentText = current.ExtractText();
+        var appendText  = text.ExtractText();
+
+        if (currentText.EndsWith(appendText, StringComparison.Ordinal))
+            return current;
+
+        using var builder = new RentedSeStringBuilder();
+        return builder.Builder.Append(current).Append(text).ToReadOnlySeString();
+    }
+
+    public static ReadOnlySeString Prepend(ReadOnlySeString current, ReadOnlySeString text)
+    {
+        if (text.IsEmpty)
+            return current;
+
+        var currentText = current.ExtractText();
+        var prependText = text.ExtractText();
+
+        if (currentText.StartsWith(prependText, StringComparison.Ordinal))
+            return current;
+
+        using var builder = new RentedSeStringBuilder();
+        return builder.Builder.Append(text).Append(current).ToReadOnlySeString();
     }
 }
 
