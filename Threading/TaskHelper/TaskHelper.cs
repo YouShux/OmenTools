@@ -176,7 +176,7 @@ public partial class TaskHelper : IDisposable
                 ).ConfigureAwait(false);
 
                 if (isBusy)
-                    await DService.Instance().Framework.DelayTicks(1, ct).ConfigureAwait(false);
+                    await Task.Delay(1, ct).ConfigureAwait(false);
             }
         }
         catch (OperationCanceledException)
