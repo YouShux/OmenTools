@@ -545,15 +545,11 @@ public unsafe class ItemTooltipContext
     public void Set(TooltipItemType type, ReadOnlySeString text) =>
         TooltipTextHelper.Set(StringArray, (int)type, text);
 
-    public void Append(TooltipItemType type, ReadOnlySeString text)
-    {
+    public void Append(TooltipItemType type, ReadOnlySeString text) =>
         Set(type, TooltipTextHelper.Append(Get(type), text));
-    }
 
-    public void Prepend(TooltipItemType type, ReadOnlySeString text)
-    {
+    public void Prepend(TooltipItemType type, ReadOnlySeString text) =>
         Set(type, TooltipTextHelper.Prepend(Get(type), text));
-    }
 
     public void Replace(TooltipItemType type, Func<ReadOnlySeString, ReadOnlySeString> replace) =>
         Set(type, replace(Get(type)));
@@ -600,15 +596,11 @@ public unsafe class ActionTooltipContext
     public void Set(TooltipActionType type, ReadOnlySeString text) =>
         TooltipTextHelper.Set(StringArray, (int)type, text);
 
-    public void Append(TooltipActionType type, ReadOnlySeString text)
-    {
+    public void Append(TooltipActionType type, ReadOnlySeString text) =>
         Set(type, TooltipTextHelper.Append(Get(type), text));
-    }
 
-    public void Prepend(TooltipActionType type, ReadOnlySeString text)
-    {
+    public void Prepend(TooltipActionType type, ReadOnlySeString text) =>
         Set(type, TooltipTextHelper.Prepend(Get(type), text));
-    }
 
     public void Replace(TooltipActionType type, Func<ReadOnlySeString, ReadOnlySeString> replace) =>
         Set(type, replace(Get(type)));
@@ -667,15 +659,11 @@ public unsafe class TooltipShowContext
     public void SetText(ReadOnlySeString text) =>
         TooltipTextHelper.Set(ref Args->TextArgs.Text, text);
 
-    public void AppendText(ReadOnlySeString text)
-    {
+    public void AppendText(ReadOnlySeString text) =>
         SetText(TooltipTextHelper.Append(Text, text));
-    }
 
-    public void PrependText(ReadOnlySeString text)
-    {
+    public void PrependText(ReadOnlySeString text) =>
         SetText(TooltipTextHelper.Prepend(Text, text));
-    }
 
     public void ReplaceText(Func<ReadOnlySeString, ReadOnlySeString> replace) =>
         SetText(replace(Text));
