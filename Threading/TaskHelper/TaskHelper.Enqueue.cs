@@ -335,7 +335,7 @@ public partial class TaskHelper
 
         EnqueueAsync
         (
-            async ct => await Task.Delay(delayMS, ct).ConfigureAwait(false),
+            async ct => await DService.Instance().Framework.DelayTicks(1, ct).ConfigureAwait(false),
             $"{uniqueName} (延迟 {delayMS} 毫秒)",
             weight: weight
         );
