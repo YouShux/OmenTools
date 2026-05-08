@@ -65,6 +65,9 @@ public static class LuminaWrapper
 
     public static string GetStatusName(uint rowID) =>
         LuminaGetter.TryGetRow<Status>(rowID, out var item) ? item.Name.ToString() : string.Empty;
+    
+    public static string GetStatusDescription(uint rowID) =>
+        LuminaGetter.TryGetRow<Status>(rowID, out var item) ? item.Description.ToString() : string.Empty;
 
     public static string GetZonePlaceName(uint rowID) =>
         LuminaGetter.TryGetRow<TerritoryType>(rowID, out var item) ? item.PlaceName.ValueNullable?.Name.ToString() ?? string.Empty : string.Empty;
