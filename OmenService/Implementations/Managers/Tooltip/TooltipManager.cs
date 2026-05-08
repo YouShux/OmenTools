@@ -220,6 +220,9 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
             
             foreach (var modification in targetModifications.Prepend)
             {
+                if (modification.Text.IsEmpty)
+                    continue;
+                
                 if (hasText) 
                     builder.AppendNewLine();
 
@@ -242,6 +245,9 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
             {
                 foreach (var modification in targetModifications.Body)
                 {
+                    if (modification.Text.IsEmpty)
+                        continue;
+                    
                     if (hasText)
                         builder.AppendNewLine();
 
@@ -252,6 +258,9 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
 
             foreach (var modification in targetModifications.Append)
             {
+                if (modification.Text.IsEmpty)
+                    continue;
+                
                 if (hasText) 
                     builder.AppendNewLine();
 
