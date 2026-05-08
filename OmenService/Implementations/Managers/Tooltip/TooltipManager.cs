@@ -19,7 +19,7 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
 {
     #region 公开订阅
 
-    public delegate void ItemTooltipUpdateDelegate(uint itemID, ref List<TooltipItemModification> modifications);
+    public delegate void ItemTooltipUpdateDelegate(uint itemID, ItemKind itemKind, ref List<TooltipItemModification> modifications);
     
     public delegate void ActionTooltipUpdateDelegate(DetailKind actionKind, uint actionID, ref List<TooltipActionModification> modifications);
 
@@ -117,7 +117,7 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
     #region 私有状态
 
     // 上个物品
-    private uint lastItemID;
+    private (uint ID, ItemKind Kind) lastItemInfo;
     
     // 物品原始文本
     private ReadOnlySeString[] itemOriginalTexts = new ReadOnlySeString[65];
@@ -153,11 +153,11 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
         var stringArrayData = AtkStage.Instance()->GetStringArrayData(StringArrayType.ItemDetail);
         var textArray       = stringArrayData->StringArray;
 
-        var currentItemID = GetBaseItemID(AgentItemDetail.Instance()->ItemId);
-        if (currentItemID != lastItemID)
+        var currentItemInfo = GetItemInfo(AgentItemDetail.Instance()->ItemId);
+        if (currentItemInfo != lastItemInfo)
         {
-            lastItemID = currentItemID;
-            DLog.Verbose($"[{nameof(TooltipManager)}] 物品工具提示内容刷新: {lastItemID}");
+            lastItemInfo = currentItemInfo;
+            DLog.Verbose($"[{nameof(TooltipManager)}] 物品工具提示内容刷新: {lastItemInfo}");
 
             for (var i = 0; i < itemOriginalTexts.Length; i++)
             {
@@ -171,7 +171,7 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
             }
         }
         
-        DLog.Verbose($"[{nameof(TooltipManager)}] 物品工具提示刷新: {lastItemID}");
+        DLog.Verbose($"[{nameof(TooltipManager)}] 物品工具提示刷新: {lastItemInfo}");
 
         // 这里是文本修改
         if (!methodsCollection.TryGetValue(typeof(ItemTooltipUpdateDelegate), out var itemDelegates))
@@ -193,7 +193,7 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
             var tooltipUpdate = (ItemTooltipUpdateDelegate)itemDelegate;
 
             List<TooltipItemModification> modifications = [];
-            tooltipUpdate(currentItemID, ref modifications);
+            tooltipUpdate(currentItemInfo.ID, currentItemInfo.Kind, ref modifications);
 
             foreach (var modification in modifications)
             {
@@ -315,7 +315,7 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
             }
         }
         
-        DLog.Verbose($"[{nameof(TooltipManager)}] 物品工具提示刷新: {lastItemID}");
+        DLog.Verbose($"[{nameof(TooltipManager)}] 物品工具提示刷新: {lastItemInfo}");
         
         // 这里是文本修改
         if (!methodsCollection.TryGetValue(typeof(ActionTooltipUpdateDelegate), out var actionDelegates))
@@ -485,23 +485,28 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
 
     #region 工具
 
-    private static uint GetBaseItemID(uint itemID)
+    private static (uint ID, ItemKind Kind) GetItemInfo(uint itemID)
     {
         switch (itemID)
         {
+            // Event Item
+            case > 200_0000:
+                itemID %= 200_0000;
+                return (itemID, ItemKind.EventItem);
+            
             // HQ
             case > 100_0000:
                 itemID %= 100_0000;
-                break;
+                return (itemID, ItemKind.Hq);
             
             // 收藏品
             case > 50_0000:
                 itemID %= 50_0000;
-                break;
+                return (itemID, ItemKind.Collectible);
         }
 
-        return itemID;
+        return (itemID, ItemKind.Normal);
     }
-
+    
     #endregion
 }
