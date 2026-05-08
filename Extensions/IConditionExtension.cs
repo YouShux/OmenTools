@@ -7,6 +7,18 @@ public static class IConditionExtension
 {
     extension(ICondition service)
     {
+        public bool IsIdle =>
+            !service.AsReadOnlySet().Except
+            (
+                [
+                    ConditionFlag.NormalConditions,
+                    ConditionFlag.Jumping,
+                    ConditionFlag.Mounted,
+                    ConditionFlag.UsingFashionAccessory,
+                    ConditionFlag.OnFreeTrial
+                ]
+            ).Any();
+        
         public bool IsOccupiedInEvent =>
             service.Any
             (
