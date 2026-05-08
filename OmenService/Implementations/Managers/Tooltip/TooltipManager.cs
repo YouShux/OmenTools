@@ -8,6 +8,7 @@ using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using InteropGenerator.Runtime;
 using Lumina.Text.ReadOnly;
+using OmenTools.Dalamud;
 using OmenTools.OmenService.Abstractions;
 
 namespace OmenTools.OmenService;
@@ -142,6 +143,7 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
         if (currentItemID != lastItemID)
         {
             lastItemID = currentItemID;
+            DLog.Verbose($"[{nameof(TooltipManager)}] 物品工具提示内容刷新: {lastItemID}");
 
             for (var i = 0; i < itemOriginalTexts.Length; i++)
             {
@@ -154,6 +156,8 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
                 itemOriginalTexts[i] = new ReadOnlySeString(new CStringPointer(textArray[i].Value).AsSpan());
             }
         }
+        
+        DLog.Verbose($"[{nameof(TooltipManager)}] 物品工具提示刷新: {lastItemID}");
 
         // 这里是文本修改
         if (!methodsCollection.TryGetValue(typeof(ItemTooltipUpdateDelegate), out var itemDelegates))
@@ -269,7 +273,7 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
             }
 
             if (hasText)
-                stringArrayData->SetValue(index, builder.ToReadOnlySeString().ToDalamudString().EncodeWithNullTerminator());
+                stringArrayData->SetValue(index, builder.GetViewAsSpan());
         }
     }
     
@@ -283,6 +287,7 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
         if (currentActionInfo != lastActionInfo)
         {
             lastActionInfo = currentActionInfo;
+            DLog.Verbose($"[{nameof(TooltipManager)}] 技能工具提示内容刷新: {lastActionInfo}");
 
             for (var i = 0; i < actionOriginalTexts.Length; i++)
             {
@@ -295,6 +300,8 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
                 actionOriginalTexts[i] = new ReadOnlySeString(new CStringPointer(textArray[i].Value).AsSpan());
             }
         }
+        
+        DLog.Verbose($"[{nameof(TooltipManager)}] 物品工具提示刷新: {lastItemID}");
         
         // 这里是文本修改
         if (!methodsCollection.TryGetValue(typeof(ActionTooltipUpdateDelegate), out var actionDelegates))
@@ -359,6 +366,9 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
 
             foreach (var modification in targetModifications.Prepend)
             {
+                if (modification.Text.IsEmpty)
+                    continue;
+                
                 if (hasText)
                     builder.AppendNewLine();
 
@@ -370,6 +380,9 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
             {
                 foreach (var modification in targetModifications.Body)
                 {
+                    if (modification.Text.IsEmpty)
+                        continue;
+                    
                     if (hasText)
                         builder.AppendNewLine();
 
@@ -388,6 +401,9 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
 
             foreach (var modification in targetModifications.Append)
             {
+                if (modification.Text.IsEmpty)
+                    continue;
+                
                 if (hasText)
                     builder.AppendNewLine();
 
@@ -395,7 +411,8 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
                 hasText = true;
             }
 
-            stringArrayData->SetValue(index, builder.GetViewAsSpan());
+            if (hasText)
+                stringArrayData->SetValue(index, builder.GetViewAsSpan());
         }
     }
     
