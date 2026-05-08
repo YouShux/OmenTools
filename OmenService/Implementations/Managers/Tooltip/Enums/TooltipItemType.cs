@@ -194,11 +194,6 @@ public enum TooltipItemType : byte
     SpecialParam4 = 41,
 
     /// <summary>
-    ///     装备特殊属性
-    /// </summary>
-    SpecialParam5 = 42,
-
-    /// <summary>
     ///     “魔晶石工艺” 标题（就是装备镶嵌的魔晶石）
     /// </summary>
     MateriaTitle = 52,

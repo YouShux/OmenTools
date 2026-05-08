@@ -42,6 +42,8 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
                     AtkStage.Instance()->GetNumberArrayData(),
                     AtkStage.Instance()->GetStringArrayData()
                 );
+                
+                DLog.Verbose($"{nameof(TooltipManager)}: 触发更新物品工具信息界面");
             }
         );
     }
@@ -63,6 +65,8 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
                     AtkStage.Instance()->GetNumberArrayData(),
                     AtkStage.Instance()->GetStringArrayData()
                 );
+                
+                DLog.Verbose($"{nameof(TooltipManager)}: 触发更新技能工具信息界面");
             }
         );
     }
