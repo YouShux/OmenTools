@@ -20,7 +20,10 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
 {
     #region 公开订阅
 
-    public delegate void ItemTooltipUpdateDelegate(uint itemID, ItemKind itemKind, ref List<TooltipItemModification> modifications);
+    /// <remarks>
+    ///     除了 <see cref="ItemKind.EventItem" /> 外, 其余均为处理好的 BaseID, 方便直接查表
+    /// </remarks>
+    public delegate void ItemTooltipUpdateDelegate(ItemKind itemKind, uint itemID, ref List<TooltipItemModification> modifications);
     
     public delegate void ActionTooltipUpdateDelegate(DetailKind actionKind, uint actionID, ref List<TooltipActionModification> modifications);
 
@@ -210,7 +213,7 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
             var tooltipUpdate = (ItemTooltipUpdateDelegate)itemDelegate;
 
             List<TooltipItemModification> modifications = [];
-            tooltipUpdate(currentItemInfo.ID, currentItemInfo.Kind, ref modifications);
+            tooltipUpdate(currentItemInfo.Kind, currentItemInfo.ID, ref modifications);
 
             foreach (var modification in modifications)
             {
@@ -519,7 +522,6 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
         {
             // Event Item
             case > 200_0000:
-                itemID %= 200_0000;
                 return (itemID, ItemKind.EventItem);
             
             // HQ
