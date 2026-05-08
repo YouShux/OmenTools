@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Runtime.InteropServices;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
+using Dalamud.Hooking;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Enums;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
@@ -112,13 +113,25 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
     private static readonly CompSig AgentItemDetailRefreshFlagOffsetSig = new("88 83 ?? ?? ?? ?? 48 8B 5C 24 ?? 48 8B 6C 24");
     private                 nint    agentItemDetailRefreshFlagOffset;
 
+    private static readonly CompSig AgentHandleItemHoverSig = new("48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 57 48 83 EC ?? 8B FA 41 8B E9");
+    private delegate byte AgentHandleItemHoverDelegate
+    (
+        AgentItemDetail* agent,
+        DetailKind       detailKind,
+        uint             itemID,
+        uint             index,
+        int              buyCount,
+        int              flag1
+    );
+    private Hook<AgentHandleItemHoverDelegate> AgentHandleItemHoverHook;
+    
     #endregion
     
     #region 私有状态
 
     // 上个物品
     private (uint ID, ItemKind Kind) lastItemInfo;
-    
+
     // 物品原始文本
     private ReadOnlySeString[] itemOriginalTexts = new ReadOnlySeString[65];
     
@@ -136,6 +149,9 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
     {
         agentItemDetailRefreshFlagOffset = Marshal.ReadInt32(AgentItemDetailRefreshFlagOffsetSig.ScanText() + 2);
         DLog.Debug($"[{nameof(TooltipManager)}] AgnetItemDetail 工具信息界面刷新标志偏移量: {agentItemDetailRefreshFlagOffset}");
+
+        AgentHandleItemHoverHook = AgentHandleItemHoverSig.GetHook<AgentHandleItemHoverDelegate>(AgentHandleItemHoverDetour);
+        AgentHandleItemHoverHook.Enable();
         
         DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PreRequestedUpdate, "ItemDetail", OnItemDetailUpdate);
         DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PreRequestedUpdate, "ActionDetail", OnActionDetailUpdate);
@@ -152,6 +168,7 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
     {
         var stringArrayData = AtkStage.Instance()->GetStringArrayData(StringArrayType.ItemDetail);
         var textArray       = stringArrayData->StringArray;
+        var numberArrayData = AtkStage.Instance()->GetNumberArrayData(NumberArrayType.ItemDetail);
 
         var currentItemInfo = GetItemInfo(AgentItemDetail.Instance()->ItemId);
         if (currentItemInfo != lastItemInfo)
@@ -242,7 +259,8 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
                     builder.AppendNewLine();
 
                 builder.Append(modification.Text);
-                hasText = true;
+                if (!modification.Text.IsEmpty)
+                    hasText = true;
             }
 
             if (targetModifications.Body.Count <= 0)
@@ -264,24 +282,27 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
                         builder.AppendNewLine();
 
                     builder.Append(modification.Text);
-                    hasText = true;
+                    if (!modification.Text.IsEmpty)
+                        hasText = true;
                 }
             }
 
             foreach (var modification in targetModifications.Append)
             {
-                if (hasText) 
+                if (hasText)
                     builder.AppendNewLine();
 
                 builder.Append(modification.Text);
-                hasText = true;
+                if (!modification.Text.IsEmpty)
+                    hasText = true;
             }
 
-            if (hasText)
-                stringArrayData->SetValue(index, builder.GetViewAsSpan());
+            stringArrayData->SetValue(index, builder.GetViewAsSpan(), suppressUpdates: true);
         }
+
+        SetItemTooltipGroupFlags(numberArrayData, modificationsByTarget.Keys);
     }
-    
+
     // 技能
     private void OnActionDetailUpdate(AddonEvent type, AddonArgs args)
     {
@@ -375,10 +396,22 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
                     builder.AppendNewLine();
 
                 builder.Append(modification.Text);
-                hasText = true;
+                if (!modification.Text.IsEmpty)
+                    hasText = true;
             }
 
-            if (targetModifications.Body.Count > 0)
+            if (targetModifications.Body.Count <= 0)
+            {
+                if (!actionOriginalTexts[index].IsEmpty)
+                {
+                    if (hasText)
+                        builder.AppendNewLine();
+
+                    builder.Append(actionOriginalTexts[index]);
+                    hasText = true;
+                }
+            }
+            else
             {
                 foreach (var modification in targetModifications.Body)
                 {
@@ -386,16 +419,9 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
                         builder.AppendNewLine();
 
                     builder.Append(modification.Text);
-                    hasText = true;
+                    if (!modification.Text.IsEmpty)
+                        hasText = true;
                 }
-            }
-            else if (!actionOriginalTexts[index].IsEmpty)
-            {
-                if (hasText)
-                    builder.AppendNewLine();
-
-                builder.Append(actionOriginalTexts[index]);
-                hasText = true;
             }
 
             foreach (var modification in targetModifications.Append)
@@ -404,12 +430,32 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
                     builder.AppendNewLine();
 
                 builder.Append(modification.Text);
-                hasText = true;
+                if (!modification.Text.IsEmpty)
+                    hasText = true;
             }
 
-            if (hasText)
-                stringArrayData->SetValue(index, builder.GetViewAsSpan());
+            stringArrayData->SetValue(index, builder.GetViewAsSpan(), suppressUpdates: true);
         }
+    }
+    
+    // 有新的物品信息需要生成
+    private byte AgentHandleItemHoverDetour
+    (
+        AgentItemDetail* agent,
+        DetailKind       detailKind,
+        uint             itemID,
+        uint             index,
+        int              buyCount,
+        int              flag1
+    )
+    {
+        var orig = AgentHandleItemHoverHook.Original(agent, detailKind, itemID, index, buyCount, flag1);
+
+        var stringArray = AtkStage.Instance()->GetStringArrayData(StringArrayType.ItemDetail);
+        for (var i = 0; i < stringArray->Size; i++)
+            stringArray->SetValue(i, [], suppressUpdates: true);
+
+        return orig;
     }
     
     // 注册
@@ -489,6 +535,79 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
 
         return (itemID, ItemKind.Normal);
     }
-    
+
+    private static void SetItemTooltipGroupFlags(NumberArrayData* numberArrayData, IEnumerable<TooltipItemType> modifiedTargets)
+    {
+        var isHeaderStatsMode = (numberArrayData->IntArray[5] & (int)TooltipItemGroupFlags.HeaderStatsGroup) != 0;
+        TooltipItemGroupFlags flagsToSet = 0;
+
+        foreach (var target in modifiedTargets)
+        {
+            switch (target)
+            {
+                case TooltipItemType.MarkerName:
+                    flagsToSet |= TooltipItemGroupFlags.CrafterName;
+                    break;
+                case TooltipItemType.Description:
+                    flagsToSet |= TooltipItemGroupFlags.Description;
+                    break;
+                case TooltipItemType.SellInfo:
+                    flagsToSet |= TooltipItemGroupFlags.Marketable;
+                    break;
+                case TooltipItemType.ClassJobCategory:
+                case TooltipItemType.ClassJobLevel:
+                    flagsToSet |= isHeaderStatsMode
+                        ? TooltipItemGroupFlags.EquipRestrictionHeader
+                        : TooltipItemGroupFlags.EquipRestriction;
+                    break;
+                case TooltipItemType.EffectTitle:
+                case TooltipItemType.Effect:
+                    flagsToSet |= TooltipItemGroupFlags.Bonuses;
+                    break;
+                case TooltipItemType.SpecialTitle:
+                case TooltipItemType.SpecialParam0:
+                case TooltipItemType.SpecialParam1:
+                case TooltipItemType.SpecialParam2:
+                case TooltipItemType.SpecialParam3:
+                case TooltipItemType.SpecialParam4:
+                    if (isHeaderStatsMode)
+                        flagsToSet |= TooltipItemGroupFlags.Effects;
+                    break;
+                case TooltipItemType.AttachMateriaTitle:
+                case TooltipItemType.AttachableGearCategory:
+                case TooltipItemType.AttachableGearContent:
+                case TooltipItemType.MateriaTitle:
+                case TooltipItemType.AttachedMateria0:
+                case TooltipItemType.AttachedMateria1:
+                case TooltipItemType.AttachedMateria2:
+                case TooltipItemType.AttachedMateria3:
+                case TooltipItemType.AttachedMateria4:
+                case TooltipItemType.AttachedMateria0Param:
+                case TooltipItemType.AttachedMateria1Param:
+                case TooltipItemType.AttachedMateria2Param:
+                case TooltipItemType.AttachedMateria3Param:
+                case TooltipItemType.AttachedMateria4Param:
+                    flagsToSet |= TooltipItemGroupFlags.Materia;
+                    break;
+                case TooltipItemType.DurabilityValue:
+                case TooltipItemType.SpiritbondCategory:
+                case TooltipItemType.SpiritbondValue:
+                case TooltipItemType.RepairInfo:
+                case TooltipItemType.RepairMaterial:
+                case TooltipItemType.QuickRepairCost:
+                case TooltipItemType.AttachMateriaInfo:
+                case TooltipItemType.GearAbilityInfo:
+                    flagsToSet |= TooltipItemGroupFlags.CraftingAndRepairs;
+                    break;
+                case TooltipItemType.ShopInfo:
+                    flagsToSet |= TooltipItemGroupFlags.ShopSellingPrice;
+                    break;
+            }
+        }
+
+        if (flagsToSet != 0)
+            numberArrayData->IntArray[5] |= (int)flagsToSet;
+    }
+
     #endregion
 }
