@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Immutable;
+using System.Runtime.InteropServices;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Utility;
@@ -9,6 +10,7 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 using InteropGenerator.Runtime;
 using Lumina.Text.ReadOnly;
 using OmenTools.Dalamud;
+using OmenTools.Interop.Game.Models;
 using OmenTools.OmenService.Abstractions;
 
 namespace OmenTools.OmenService;
@@ -37,11 +39,9 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
         (() =>
             {
                 if (!ItemDetail->IsAddonAndNodesReady()) return;
-                ItemDetail->OnRequestedUpdate
-                (
-                    AtkStage.Instance()->GetNumberArrayData(),
-                    AtkStage.Instance()->GetStringArrayData()
-                );
+                
+                var agent = AgentItemDetail.Instance();
+                *(byte*)((nint)agent + agentItemDetailRefreshFlagOffset) = 1;
                 
                 DLog.Verbose($"{nameof(TooltipManager)}: 触发更新物品工具信息界面");
             }
@@ -106,6 +106,13 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
     #endregion
 
     #endregion
+
+    #region 私有逆向
+
+    private static readonly CompSig AgentItemDetailRefreshFlagOffsetSig = new("88 83 ?? ?? ?? ?? 48 8B 5C 24 ?? 48 8B 6C 24");
+    private                 nint    agentItemDetailRefreshFlagOffset;
+
+    #endregion
     
     #region 私有状态
 
@@ -127,6 +134,9 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
     
     protected override void Init()
     {
+        agentItemDetailRefreshFlagOffset = Marshal.ReadInt32(AgentItemDetailRefreshFlagOffsetSig.ScanText() + 2);
+        DLog.Debug($"[{nameof(TooltipManager)}] AgnetItemDetail 工具信息界面刷新标志偏移量: {agentItemDetailRefreshFlagOffset}");
+        
         DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PreRequestedUpdate, "ItemDetail", OnItemDetailUpdate);
         DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PreRequestedUpdate, "ActionDetail", OnActionDetailUpdate);
     }
