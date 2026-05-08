@@ -456,7 +456,7 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
 
         var stringArray = AtkStage.Instance()->GetStringArrayData(StringArrayType.ItemDetail);
         for (var i = 0; i < stringArray->Size; i++)
-            stringArray->SetValue(i, [], suppressUpdates: true);
+            stringArray->SetValue(i, new CStringPointer(null), false, suppressUpdates: true);
 
         return orig;
     }
