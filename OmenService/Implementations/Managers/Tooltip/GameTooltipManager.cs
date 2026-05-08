@@ -20,6 +20,7 @@ using RowStatus = Lumina.Excel.Sheets.Status;
 
 namespace OmenTools.OmenService;
 
+[Obsolete("使用 TooltipManager")]
 public unsafe class GameTooltipManager : OmenServiceBase<GameTooltipManager>
 {
     #region 外部委托
@@ -841,46 +842,6 @@ internal static unsafe class TooltipTextHelper
         using var builder = new RentedSeStringBuilder();
         return builder.Builder.Append(text).Append(current).ToReadOnlySeString();
     }
-}
-
-public enum TooltipItemType : byte
-{
-    ItemName,
-    GlamourName,
-    ItemUICategory,
-    ItemDescription                       = 13,
-    Effects                               = 16,
-    ClassJobCategory                      = 22,
-    DurabilityPercent                     = 28,
-    SpiritbondPercent                     = 30,
-    ExtractableProjectableDesynthesizable = 35,
-    Param0                                = 37,
-    Param1                                = 38,
-    Param2                                = 39,
-    Param3                                = 40,
-    Param4                                = 41,
-    Param5                                = 42,
-    ControlsDisplay                       = 64
-}
-
-public enum TooltipActionType
-{
-    ActionName,
-    ActionKind,
-    Unknown02, // 与ActionKind共享同一位置
-    RangeText,
-    RangeValue,
-    RadiusText,
-    RadiusValue,
-    MPCostText,
-    MPCostValue,
-    RecastText,
-    RecastValue,
-    CastText,
-    CastValue,
-    Description,
-    Level,
-    ClassJobAbbr
 }
 
 #endregion
