@@ -3,7 +3,6 @@ using System.Collections.Immutable;
 using System.Runtime.InteropServices;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
-using Dalamud.Hooking;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Enums;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
@@ -24,7 +23,7 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
     ///     除了 <see cref="ItemKind.EventItem" /> 外, 其余均为处理好的 BaseID, 方便直接查表
     /// </remarks>
     public delegate void ItemTooltipUpdateDelegate(ItemKind itemKind, uint itemID, ref List<TooltipItemModification> modifications);
-    
+
     public delegate void ActionTooltipUpdateDelegate(DetailKind actionKind, uint actionID, ref List<TooltipActionModification> modifications);
 
     #endregion
@@ -43,15 +42,15 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
         (() =>
             {
                 if (!ItemDetail->IsAddonAndNodesReady()) return;
-                
+
                 var agent = AgentItemDetail.Instance();
                 *(byte*)((nint)agent + agentItemDetailRefreshFlagOffset) = 1;
-                
+
                 DLog.Verbose($"{nameof(TooltipManager)}: 触发更新物品工具信息界面");
             }
         );
     }
-    
+
     /// <summary>
     ///     触发一次技能工具信息界面更新
     /// </summary>
@@ -69,7 +68,7 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
                     AtkStage.Instance()->GetNumberArrayData(),
                     AtkStage.Instance()->GetStringArrayData()
                 );
-                
+
                 DLog.Verbose($"{nameof(TooltipManager)}: 触发更新技能工具信息界面");
             }
         );
@@ -116,20 +115,8 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
     private static readonly CompSig AgentItemDetailRefreshFlagOffsetSig = new("88 83 ?? ?? ?? ?? 48 8B 5C 24 ?? 48 8B 6C 24");
     private                 nint    agentItemDetailRefreshFlagOffset;
 
-    private static readonly CompSig AgentHandleItemHoverSig = new("48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 57 48 83 EC ?? 8B FA 41 8B E9");
-    private delegate byte AgentHandleItemHoverDelegate
-    (
-        AgentItemDetail* agent,
-        DetailKind       detailKind,
-        uint             itemID,
-        uint             index,
-        int              buyCount,
-        int              flag1
-    );
-    private Hook<AgentHandleItemHoverDelegate> AgentHandleItemHoverHook;
-    
     #endregion
-    
+
     #region 私有状态
 
     // 上个物品
@@ -137,26 +124,23 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
 
     // 物品原始文本
     private ReadOnlySeString[] itemOriginalTexts = new ReadOnlySeString[65];
-    
+
     // 上个技能
     private (DetailKind Kind, uint ID) lastActionInfo;
-    
+
     // 技能原始文本
     private ReadOnlySeString[] actionOriginalTexts = new ReadOnlySeString[16];
-    
+
     private readonly ConcurrentDictionary<Type, ImmutableList<Delegate>> methodsCollection = [];
 
     #endregion
-    
+
     protected override void Init()
     {
         agentItemDetailRefreshFlagOffset = Marshal.ReadInt32(AgentItemDetailRefreshFlagOffsetSig.ScanText() + 2);
         DLog.Debug($"[{nameof(TooltipManager)}] AgnetItemDetail 工具信息界面刷新标志偏移量: {agentItemDetailRefreshFlagOffset}");
 
-        AgentHandleItemHoverHook = AgentHandleItemHoverSig.GetHook<AgentHandleItemHoverDelegate>(AgentHandleItemHoverDetour);
-        AgentHandleItemHoverHook.Enable();
-        
-        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PreRequestedUpdate, "ItemDetail", OnItemDetailUpdate);
+        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PreRequestedUpdate, "ItemDetail",   OnItemDetailUpdate);
         DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PreRequestedUpdate, "ActionDetail", OnActionDetailUpdate);
     }
 
@@ -172,25 +156,29 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
         var stringArrayData = AtkStage.Instance()->GetStringArrayData(StringArrayType.ItemDetail);
         var textArray       = stringArrayData->StringArray;
         var numberArrayData = AtkStage.Instance()->GetNumberArrayData(NumberArrayType.ItemDetail);
+        var itemGroupFlags  = GetItemTooltipGroupFlags(numberArrayData);
 
         var currentItemInfo = GetItemInfo(AgentItemDetail.Instance()->ItemId);
+
         if (currentItemInfo != lastItemInfo)
         {
-            lastItemInfo = currentItemInfo;
+            lastItemInfo      = currentItemInfo;
+            itemOriginalTexts = new ReadOnlySeString[65];
+
             DLog.Verbose($"[{nameof(TooltipManager)}] 物品工具提示内容刷新: {lastItemInfo}");
 
             for (var i = 0; i < itemOriginalTexts.Length; i++)
             {
-                if (!textArray[i].HasValue)
+                if (!IsItemTooltipTextSet(itemGroupFlags, (TooltipItemType)i) || !textArray[i].HasValue)
                 {
-                    itemOriginalTexts[i] = new ReadOnlySeString();
+                    itemOriginalTexts[i] = new();
                     continue;
                 }
-                
-                itemOriginalTexts[i] = new ReadOnlySeString(new CStringPointer(textArray[i].Value).AsSpan());
+
+                itemOriginalTexts[i] = new(new CStringPointer(textArray[i].Value).AsSpan());
             }
         }
-        
+
         DLog.Verbose($"[{nameof(TooltipManager)}] 物品工具提示刷新: {lastItemInfo}");
 
         // 这里是文本修改
@@ -202,12 +190,12 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
         <
             TooltipItemType,
             (
-                List<TooltipItemModification> Prepend,
-                List<TooltipItemModification> Body,
-                List<TooltipItemModification> Append
+            List<TooltipItemModification> Prepend,
+            List<TooltipItemModification> Body,
+            List<TooltipItemModification> Append
             )
         >();
-        
+
         foreach (var itemDelegate in itemDelegates)
         {
             var tooltipUpdate = (ItemTooltipUpdateDelegate)itemDelegate;
@@ -244,7 +232,7 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
                 }
             }
         }
-        
+
         // 形成
         foreach (var (target, targetModifications) in modificationsByTarget)
         {
@@ -252,13 +240,13 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
             if ((uint)index >= (uint)itemOriginalTexts.Length) continue;
 
             using var rentedBuilder = new RentedSeStringBuilder();
-            var builder = rentedBuilder.Builder;
-            
+            var       builder       = rentedBuilder.Builder;
+
             var hasText = false;
-            
+
             foreach (var modification in targetModifications.Prepend)
             {
-                if (hasText) 
+                if (hasText)
                     builder.AppendNewLine();
 
                 builder.Append(modification.Text);
@@ -313,9 +301,12 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
         var textArray       = stringArrayData->StringArray;
 
         var currentActionInfo = (AgentActionDetail.Instance()->ActionKind, AgentActionDetail.Instance()->ActionId);
+
         if (currentActionInfo != lastActionInfo)
         {
-            lastActionInfo = currentActionInfo;
+            lastActionInfo      = currentActionInfo;
+            actionOriginalTexts = new ReadOnlySeString[16];
+
             DLog.Verbose($"[{nameof(TooltipManager)}] 技能工具提示内容刷新: {lastActionInfo}");
 
             for (var i = 0; i < actionOriginalTexts.Length; i++)
@@ -325,13 +316,13 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
                     actionOriginalTexts[i] = new ReadOnlySeString();
                     continue;
                 }
-                
+
                 actionOriginalTexts[i] = new ReadOnlySeString(new CStringPointer(textArray[i].Value).AsSpan());
             }
         }
-        
+
         DLog.Verbose($"[{nameof(TooltipManager)}] 物品工具提示刷新: {lastItemInfo}");
-        
+
         // 这里是文本修改
         if (!methodsCollection.TryGetValue(typeof(ActionTooltipUpdateDelegate), out var actionDelegates))
             return;
@@ -340,9 +331,9 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
         <
             TooltipActionType,
             (
-                List<TooltipActionModification> Prepend,
-                List<TooltipActionModification> Body,
-                List<TooltipActionModification> Append
+            List<TooltipActionModification> Prepend,
+            List<TooltipActionModification> Body,
+            List<TooltipActionModification> Append
             )
         >();
 
@@ -358,11 +349,11 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
                 if (!modificationsByTarget.TryGetValue(modification.Target, out var targetModifications))
                 {
                     targetModifications =
-                    (
-                        [],
-                        [],
-                        []
-                    );
+                        (
+                            [],
+                            [],
+                            []
+                        );
                     modificationsByTarget[modification.Target] = targetModifications;
                 }
 
@@ -440,27 +431,7 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
             stringArrayData->SetValue(index, builder.GetViewAsSpan(), suppressUpdates: true);
         }
     }
-    
-    // 有新的物品信息需要生成
-    private byte AgentHandleItemHoverDetour
-    (
-        AgentItemDetail* agent,
-        DetailKind       detailKind,
-        uint             itemID,
-        uint             index,
-        int              buyCount,
-        int              flag1
-    )
-    {
-        var orig = AgentHandleItemHoverHook.Original(agent, detailKind, itemID, index, buyCount, flag1);
 
-        var stringArray = AtkStage.Instance()->GetStringArrayData(StringArrayType.ItemDetail);
-        for (var i = 0; i < stringArray->Size; i++)
-            stringArray->SetValue(i, new CStringPointer(null), false, suppressUpdates: true);
-
-        return orig;
-    }
-    
     // 注册
     private bool RegisterGeneric<T>(T method, params T[] methods) where T : Delegate
     {
@@ -523,12 +494,12 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
             // Event Item
             case > 200_0000:
                 return (itemID, ItemKind.EventItem);
-            
+
             // HQ
             case > 100_0000:
                 itemID %= 100_0000;
                 return (itemID, ItemKind.Hq);
-            
+
             // 收藏品
             case > 50_0000:
                 itemID %= 50_0000;
@@ -538,10 +509,87 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
         return (itemID, ItemKind.Normal);
     }
 
+    private static TooltipItemGroupFlags GetItemTooltipGroupFlags(NumberArrayData* numberArrayData) =>
+        (TooltipItemGroupFlags)numberArrayData->IntArray[5];
+
+    private static bool IsItemTooltipTextSet(TooltipItemGroupFlags flags, TooltipItemType target)
+    {
+        var isHeaderStatsMode = (flags & TooltipItemGroupFlags.HeaderStatsGroup) != 0;
+
+        return target switch
+        {
+            TooltipItemType.Name
+                or TooltipItemType.GlamourName
+                or TooltipItemType.UICategory
+                or TooltipItemType.OwnedCount
+                or TooltipItemType.ItemLevel
+                or TooltipItemType.ControlHelp => true,
+
+            TooltipItemType.MainParam0Name
+                or TooltipItemType.MainParam1Name
+                or TooltipItemType.MainParam2Name
+                or TooltipItemType.MainParam0Value
+                or TooltipItemType.MainParam1Value
+                or TooltipItemType.MainParam2Value
+                or TooltipItemType.MainParam0OffsetValue
+                or TooltipItemType.MainParam1OffsetValue
+                or TooltipItemType.MainParam2OffsetValue => isHeaderStatsMode,
+
+            TooltipItemType.MarkerName  => (flags & TooltipItemGroupFlags.CrafterName) != 0,
+            TooltipItemType.Description => (flags & TooltipItemGroupFlags.Description) != 0,
+            TooltipItemType.SellInfo    => (flags & TooltipItemGroupFlags.Marketable)  != 0,
+
+            TooltipItemType.ClassJobCategory
+                or TooltipItemType.ClassJobLevel => (flags &
+                                                     (isHeaderStatsMode
+                                                          ? TooltipItemGroupFlags.EquipRestrictionHeader
+                                                          : TooltipItemGroupFlags.EquipRestriction)) !=
+                                                    0,
+
+            TooltipItemType.EffectTitle
+                or TooltipItemType.Effect => (flags & TooltipItemGroupFlags.Bonuses) != 0,
+
+            TooltipItemType.SpecialTitle
+                or TooltipItemType.SpecialParam0
+                or TooltipItemType.SpecialParam1
+                or TooltipItemType.SpecialParam2
+                or TooltipItemType.SpecialParam3
+                or TooltipItemType.SpecialParam4 => isHeaderStatsMode && (flags & TooltipItemGroupFlags.Effects) != 0,
+
+            TooltipItemType.AttachMateriaTitle
+                or TooltipItemType.AttachableGearCategory
+                or TooltipItemType.AttachableGearContent
+                or TooltipItemType.MateriaTitle
+                or TooltipItemType.AttachedMateria0
+                or TooltipItemType.AttachedMateria1
+                or TooltipItemType.AttachedMateria2
+                or TooltipItemType.AttachedMateria3
+                or TooltipItemType.AttachedMateria4
+                or TooltipItemType.AttachedMateria0Param
+                or TooltipItemType.AttachedMateria1Param
+                or TooltipItemType.AttachedMateria2Param
+                or TooltipItemType.AttachedMateria3Param
+                or TooltipItemType.AttachedMateria4Param => (flags & TooltipItemGroupFlags.Materia) != 0,
+
+            TooltipItemType.DurabilityValue
+                or TooltipItemType.SpiritbondCategory
+                or TooltipItemType.SpiritbondValue
+                or TooltipItemType.RepairInfo
+                or TooltipItemType.RepairMaterial
+                or TooltipItemType.QuickRepairCost
+                or TooltipItemType.AttachMateriaInfo
+                or TooltipItemType.GearAbilityInfo => (flags & TooltipItemGroupFlags.CraftingAndRepairs) != 0,
+
+            TooltipItemType.ShopInfo => (flags & TooltipItemGroupFlags.ShopSellingPrice) != 0,
+
+            _ => false
+        };
+    }
+
     private static void SetItemTooltipGroupFlags(NumberArrayData* numberArrayData, IEnumerable<TooltipItemType> modifiedTargets)
     {
-        var isHeaderStatsMode = (numberArrayData->IntArray[5] & (int)TooltipItemGroupFlags.HeaderStatsGroup) != 0;
-        TooltipItemGroupFlags flagsToSet = 0;
+        var                   isHeaderStatsMode = (GetItemTooltipGroupFlags(numberArrayData) & TooltipItemGroupFlags.HeaderStatsGroup) != 0;
+        TooltipItemGroupFlags flagsToSet        = 0;
 
         foreach (var target in modifiedTargets)
         {
@@ -559,8 +607,8 @@ public unsafe class TooltipManager : OmenServiceBase<TooltipManager>
                 case TooltipItemType.ClassJobCategory:
                 case TooltipItemType.ClassJobLevel:
                     flagsToSet |= isHeaderStatsMode
-                        ? TooltipItemGroupFlags.EquipRestrictionHeader
-                        : TooltipItemGroupFlags.EquipRestriction;
+                                      ? TooltipItemGroupFlags.EquipRestrictionHeader
+                                      : TooltipItemGroupFlags.EquipRestriction;
                     break;
                 case TooltipItemType.EffectTitle:
                 case TooltipItemType.Effect:
